@@ -1,0 +1,118 @@
+import psycopg2
+import sys
+import csv
+import json
+
+
+
+class ApproximationAPI:
+    def __init__(self, host, dbname, user, port):
+        self.host = host
+        self.dbname = dbname
+        self.user = user
+        self.port = port
+        self.con = None
+
+    def connect(self):
+        self.con = psycopg2.connect("host='" + self.host + "' dbname='" + self.dbname + "' user='" + self.user + "' port='" + self.port + "'")   
+        return self.con
+
+    def close_connect(self):
+        self.con.close()
+        self.con = None
+
+    def import_tweets(self, filename):
+        statement = ''' 
+            COPY %s FROM STDIN WITH 
+                CSV 
+                HEADER
+                DELIMITER AS ',' 
+            '''
+        my_file = open(filename)
+        cur = self.con.cursor()
+        cur.copy_expert(sql=statement % 'tweets',file = my_file)
+        self.con.commit()
+        cur.close()
+        print("Successfully imported tweets")
+
+
+    def get_location_name(self, lat, lng):
+        statement = ''' 
+            SELECT barangays.name_3, city_municipalities.name_2, provinces.name_1
+            FROM city_municipalities 
+            INNER JOIN barangays ON city_municipalities.id_2 = barangays.id_2
+            INNER JOIN provinces ON provinces.id_1 = city_municipalities.id_1
+            WHERE ST_INTERSECTS(ST_PointFromText('POINT( ''' + str(lng) + " " + str(lat) + ''')', 4326), barangays.geom);
+        '''
+        cur = self.con.cursor()
+        cur.execute(statement)
+        fetch = cur.fetchone()
+        cur.close()
+        if(fetch != None):
+            out = json.dumps({"name": {"barangay":fetch[0], "city": fetch[1], "province": fetch[2]}, "geo": {"lat": lat, "lng": lng}}, separators=(',', ':'), indent = 4)
+        else:
+            out = json.dumps({"name": "N/A", "geo": {"lat": lat, "lng": lng}})
+        return out
+        
+
+    def get_tweet_data(self, x):
+        statement = ''' 
+            SELECT id, created_at, tweets.user, text, lat, lng, user_location, radius
+            FROM tweets
+            WHERE lat IS NOT NULL AND lng IS NOT NULL
+            FETCH FIRST ''' + str(x) + ''' ROWS ONLY
+        '''
+        cur = self.con.cursor()
+        cur.execute(statement)
+        arr = cur.fetchall()
+
+        dic = {}
+        for i in range(len(arr)):
+            location = self.get_location_name(arr[i][4], arr[i][5])
+            dic[arr[i][0]] = {"created_at": arr[i][1], "user": arr[i][2], "text": arr[i][3], "user_location": arr[i][6], "location": json.loads(location), "radius": arr[i][7]}
+        out = json.dumps(dic, indent = 4)
+        cur.close()
+        return out
+
+    def update_location(self, tweet_id, lat, lng, radius):
+        statement = ''' 
+            UPDATE tweets
+            SET lat = ''' + str(lat) + ''', lng = ''' + str(lng) + ''', radius = ''' + str(radius) + '''
+            WHERE id =''' + str(tweet_id) + ''';
+        '''
+        cur = self.con.cursor()
+        cur.execute(statement)
+        self.con.commit()
+        cur.close()
+
+
+    def setup(self):
+        if self.con:
+            cur = self.con.cursor()
+            cur.execute(open("migrations/tables.sql","r").read())
+            print("Created tables.")
+            cur.execute(open("migrations/phl_adm0s.sql","r").read())
+            print("Imported gis data to countries table")
+            cur.execute(open("migrations/phl_adm1s.sql","r").read())
+            print("Imported gis data to provinces table")
+            cur.execute(open("migrations/phl_adm2s.sql","r").read())
+            print("Imported gis data to city_municipalities table")
+            cur.execute(open("migrations/phl_adm3s.sql","r").read())
+            print("Imported gis data to barangays table")
+            self.con.commit()
+            cur.close()
+        else:
+            self.connect()
+            self.setup()
+
+    def test(self):
+        print("Testing connection to database: " + self.dbname)
+        print("Host: " + self.host)
+        print("User: " + self.user)
+       
+        self.con = self.connect()
+        print("Successfully connected to database")
+
+        if self.con:
+            self.close_connect()
+            print("Successfully closed connection from database")

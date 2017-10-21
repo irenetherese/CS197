@@ -21,7 +21,7 @@ lemmas = []
 for doc in df['Parsed']:
 	temp = []
 	for w in doc:
-		if not w.is_stop and not w.is_punct and not w.like_num and not w.is_sym:
+		if not w.is_stop and not w.is_punct and not w.like_num:
 			temp.append(w)
 	lemmas.append(temp)
 df['lemmas'] = lemmas
