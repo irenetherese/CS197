@@ -23,7 +23,7 @@ for filename in files:
 	for doc in df['Parsed']:
 		temp = []
 		for w in doc:
-			if not w.is_stop and not w.is_punct and not w.like_num and len(w.lemma_) > 2 and '@' not in w.lemma_:
+			if not w.is_stop and not w.is_punct and not w.like_num and len(w.lemma_) > 2 and '@' not in w.lemma_ and 'http' not in w.lemma_:
 				temp.append(str.lower(w.lemma_))
 		lemmas.append(temp)
 	df['lemmas'] = lemmas

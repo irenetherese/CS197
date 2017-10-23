@@ -11,7 +11,7 @@ def time_counter(start_time,isRunning):
 		print("%s elapsed" % (str(datetime.timedelta(seconds=time.time() - start_time))),end='\r')
 
 
-df = pd.DataFrame.from_csv('[pp_FULL] yolanda nov 7.csv')
+df = pd.DataFrame.from_csv('dataset_yolanda.csv')
 lemmas_list = [] 
 
 for lemmas in df['lemmas']:
@@ -24,7 +24,7 @@ for lemmas in df['lemmas']:
 #print(lemmas_list)
 
 dictionary = corpora.Dictionary(lemmas_list)
-dictionary.save('./nov7_corpus.dict')
+dictionary.save('./yolanda_corpus.dict')
 
 clean_doc = [dictionary.doc2bow(text) for text in lemmas_list]
 
@@ -36,10 +36,10 @@ start_time = time.time()
 
 _thread.start_new_thread(time_counter,(start_time,isRunning))
 
-# lsi = LsiModel(corpus=tfidf[clean_doc], id2word=dictionary,num_topics=200)
-# lsi.save('model.txt')
+lsi = LsiModel(corpus=tfidf[clean_doc], id2word=dictionary,num_topics=200)
+lsi.save('yolanda_model.txt')
 
-lsi = LsiModel.load('model.txt')
+# lsi = LsiModel.load('yolanda_model.txt')
 
 
 index = similarities.MatrixSimilarity(lsi[clean_doc])
@@ -47,7 +47,7 @@ index = similarities.MatrixSimilarity(lsi[clean_doc])
 corpus = lsi[dictionary.doc2bow(lemmas_list[0])]
 # print(time.time()-start_time)
 with open('./outputs_clean.txt', 'w+') as file:
-	for doc in sorted(enumerate(index[corpuscd ]), key=lambda item: -item[1]):
+	for doc in sorted(enumerate(index[corpus]), key=lambda item: -item[1]):
 		file.write(str(doc) + '\n')
 
 isRunning = False
