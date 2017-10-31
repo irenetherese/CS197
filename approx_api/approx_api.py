@@ -3,8 +3,6 @@ import sys
 import csv
 import json
 
-
-
 class ApproximationAPI:
     def __init__(self, host, dbname, user, port):
         self.host = host
@@ -67,9 +65,11 @@ class ApproximationAPI:
         arr = cur.fetchall()
 
         dic = {}
+
         for i in range(len(arr)):
             location = self.get_location_name(arr[i][4], arr[i][5])
             dic[arr[i][0]] = {"created_at": arr[i][1], "user": arr[i][2], "text": arr[i][3], "user_location": arr[i][6], "location": json.loads(location), "radius": arr[i][7]}
+       
         out = json.dumps(dic, indent = 4)
         cur.close()
         return out
