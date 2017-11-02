@@ -24,7 +24,7 @@ def csv_reader(file_obj,filename):
 					})
 
 	for line in reader:
-		if line['lat'] and line['lng']:
+		if line['lat'] and line['lng'] and len(line['language']) == 2:
 				writer.writerow({
 					'user': line['user'],
 					'language': line['language'],
@@ -32,7 +32,7 @@ def csv_reader(file_obj,filename):
 					'lat': line['lat'],
 					'lng': line['lng'],
 					'user utc offset': line['user utc offset'],
-					'text': line['text'],
+					'text': line['text'].replace(';', ''),
 					'user time zone': line['user time zone'],
 					'id': line['id'],
 					'created_at': line['created_at'],
