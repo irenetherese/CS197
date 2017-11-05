@@ -84,17 +84,15 @@ CREATE TABLE IF NOT EXISTS provinces (
 );
 
 
-CREATE TABLE IF NOT EXISTS tweets (
-	"id" bigint PRIMARY KEY not null,
+CREATE TABLE IF NOT EXISTS tweet_collector_tweets (
+	"tweet_id" bigint PRIMARY KEY not null,
 	"created_at" varchar not null,
-	"user" varchar not null,
-	"text" text not null,
-	"language" varchar, 
-	"lat" float,
-	"lng" float,
-	"user_location" varchar,
-	"user_utc_offset" varchar,
-	"user_timezone" varchar ,
+	"tweet_user" varchar not null,
+	"tweet_text" text not null,
+	"tweet_lang" varchar, 
+	"tweet_lat" float,
+	"tweet_lon" float,
+	"tweet_user_location" varchar,
     "radius" int
 );
 
