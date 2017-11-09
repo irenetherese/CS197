@@ -1,8 +1,11 @@
 from flask import Flask
+from flask import jsonify
+
 import sys
 import optparse
 import time
 import approx_api
+import requests
 
 app = Flask(__name__)
 start = int(round(time.time()))
@@ -17,11 +20,11 @@ def hello_world():
 
 @app.route("/get_tweets")
 def get_tweets():
-	return a.get_tweet_data(10)
+    return jsonify(a.get_tweet_data(10))
 
 @app.route("/get_city/<float:lat>/<float:lon>")
 def get_place(lat, lon):
-    return a.get_location_name(lat, lon)
+    return jsonify(a.get_location_name(lat, lon))
 
 if __name__ == '__main__':
     parser = optparse.OptionParser(usage="python3 app.py -p ")
@@ -30,4 +33,4 @@ if __name__ == '__main__':
     if args.port == None:
         print("Missing required argument: -p/--port")
         sys.exit(1)
-    app.run(host='0.0.0.0', port=int(args.port), debug=False)
+    app.run(host='127.0.0.1', port=int(args.port), debug=False)

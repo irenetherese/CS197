@@ -47,15 +47,15 @@ class ApproximationAPI:
         fetch = cur.fetchone()
         cur.close()
         if(fetch != None):
-            out = json.dumps({"name": {"barangay":fetch[0], "city": fetch[1], "province": fetch[2]}, "geo": {"lat": str(lat), "lon": str(lon)}}, separators=(',', ':'), indent = 4)
+            out = {"name": {"barangay":fetch[0], "city": fetch[1], "province": fetch[2]}, "geo": {"lat": str(lat), "lon": str(lon)}}
         else:
-            out = json.dumps({"name": "N/A", "geo": {"lat": str(lat), "lon": str(lon)}})
+            out = {"name": "N/A", "geo": {"lat": str(lat), "lon": str(lon)}}
         return out
         
 
     def get_tweet_data(self, x):
         statement = ''' 
-            SELECT tweet_id, created_at, tweet_user, tweet_text, tweet_lat, tweet_lon, tweet_user_location, radius
+            SELECT tweet_id, created_at, tweet_user, tweet_text, tweet_lat, tweet_lon, tweet_user_location, radius, tweet_json
             FROM tweet_collector_tweets
             WHERE tweet_lat IS NOT NULL AND tweet_lon IS NOT NULL
             FETCH FIRST ''' + str(x) + ''' ROWS ONLY
@@ -68,11 +68,11 @@ class ApproximationAPI:
 
         for i in range(len(arr)):
             location = self.get_location_name(arr[i][4], arr[i][5])
-            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][2], "text": arr[i][3], "user_location": arr[i][6], "location": json.loads(location), "radius": arr[i][7]}
+            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][2], "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": json.loads(location), "radius": arr[i][7]}
        
-        out = json.dumps(dic, indent = 4)
+        #out = json.dumps(dic, indent = 4)
         cur.close()
-        return out
+        return dic
 
     def update_location(self, tweet_id, lat, lng, radius):
         statement = ''' 
