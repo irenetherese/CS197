@@ -18,9 +18,17 @@ a.connect()
 def hello_world():
     return "Hello World Flask Test!"
 
-@app.route("/get_tweets")
-def get_tweets():
-    return jsonify(a.get_tweet_data(10))
+@app.route("/get_geo_tweets/<int:collection_id>")
+def get_geo_tweets(collection_id):
+    return jsonify(a.get_geo_tweets(collection_id))
+
+@app.route("/get_non_geo_tweets/<int:collection_id>")
+def get_non_geo_tweets(collection_id):
+    return jsonify(a.get_non_geo_tweets(collection_id))
+
+@app.route("/get_tweet_vis_data/<int:collection_id>")
+def get_tweet_vis_data(collection_id):
+    return jsonify(a.get_tweet_vis_data(collection_id))
 
 @app.route("/get_city/<float:lat>/<float:lon>")
 def get_place(lat, lon):

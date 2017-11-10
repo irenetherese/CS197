@@ -33,7 +33,6 @@ class ApproximationAPI:
         cur.close()
         print("Successfully imported tweets")
 
-
     def get_location_name(self, lat, lon):
         statement = ''' 
             SELECT barangays.name_3, city_municipalities.name_2, provinces.name_1
@@ -52,23 +51,56 @@ class ApproximationAPI:
             out = {"name": "N/A", "geo": {"lat": str(lat), "lon": str(lon)}}
         return out
         
-
-    def get_tweet_data(self, x):
+    def get_geo_tweets(self, collection_id):
         statement = ''' 
-            SELECT tweet_id, created_at, tweet_user, tweet_text, tweet_lat, tweet_lon, tweet_user_location, radius, tweet_json
+            SELECT tweet_id, tweet_text, tweet_lat, tweet_lon
             FROM tweet_collector_tweets
-            WHERE tweet_lat IS NOT NULL AND tweet_lon IS NOT NULL
-            FETCH FIRST ''' + str(x) + ''' ROWS ONLY
+            WHERE tweet_lat IS NOT NULL AND tweet_lon IS NOT NULL AND collection_id = ''' + str(collection_id) + '''
         '''
         cur = self.con.cursor()
         cur.execute(statement)
         arr = cur.fetchall()
 
         dic = {}
+        for i in range(len(arr)):
+            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]),"lon": str(arr[i][3])}
+       
+        #out = json.dumps(dic, indent = 4)
+        cur.close()
+        return dic
 
+    def get_non_geo_tweets(self, collection_id):
+        statement = ''' 
+            SELECT tweet_id, tweet_text
+            FROM tweet_collector_tweets
+            WHERE tweet_lat ISNULL AND tweet_lon ISNULL AND collection_id = ''' + str(collection_id) + '''
+        '''
+        cur = self.con.cursor()
+        cur.execute(statement)
+        arr = cur.fetchall()
+
+        dic = {}
+        for i in range(len(arr)):
+            dic[arr[i][0]] = {"text": str(arr[i][1])}
+       
+        #out = json.dumps(dic, indent = 4)
+        cur.close()
+        return dic
+
+    def get_tweet_vis_data(self, collection_id):
+        statement = ''' 
+            SELECT tweet_id, created_at, tweet_user, tweet_text, tweet_lat, tweet_lon, tweet_user_location, radius, tweet_json
+            FROM tweet_collector_tweets
+            WHERE tweet_lat IS NOT NULL AND tweet_lon IS NOT NULL AND collection_id = ''' + str(collection_id) + '''
+        '''
+        cur = self.con.cursor()
+        cur.execute(statement)
+        arr = cur.fetchall()
+
+        dic = {}
         for i in range(len(arr)):
             location = self.get_location_name(arr[i][4], arr[i][5])
-            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][2], "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": json.loads(location), "radius": arr[i][7]}
+            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][2], "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
        
         #out = json.dumps(dic, indent = 4)
         cur.close()
