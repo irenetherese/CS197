@@ -11,6 +11,9 @@ class ApproximationAPI:
         self.port = port
         self.con = None
 
+###############
+# CONNECTIONS #
+###############
     def connect(self):
         self.con = psycopg2.connect("host='" + self.host + "' dbname='" + self.dbname + "' user='" + self.user + "' port='" + self.port + "'")   
         return self.con
@@ -19,20 +22,23 @@ class ApproximationAPI:
         self.con.close()
         self.con = None
 
-    def import_tweets(self, filename):
-        statement = ''' 
-            COPY %s FROM STDIN WITH 
-                CSV 
-                HEADER
-                DELIMITER AS ',' 
-            '''
-        my_file = open(filename)
-        cur = self.con.cursor()
-        cur.copy_expert(sql=statement % 'tweets',file = my_file)
-        self.con.commit()
-        cur.close()
-        print("Successfully imported tweets")
+    #test connection
+    def test(self):
+        print("Testing connection to database: " + self.dbname)
+        print("Host: " + self.host)
+        print("User: " + self.user)
+       
+        self.con = self.connect()
+        print("Successfully connected to database")
 
+        if self.con:
+            self.close_connect()
+            print("Successfully closed connection from database")
+
+
+#################
+# FUNCTIONALITY #
+#################
     def get_location_name(self, lat, lon):
         statement = ''' 
             SELECT barangays.name_3, city_municipalities.name_2, provinces.name_1
@@ -50,7 +56,25 @@ class ApproximationAPI:
         else:
             out = {"name": "N/A", "geo": {"lat": str(lat), "lon": str(lon)}}
         return out
-        
+
+    #all tweets
+    def get_tweets(self, collection_id):
+        statement = ''' 
+            SELECT tweet_id, created_at, tweet_user, tweet_text, tweet_lat, tweet_lon, tweet_user_location, radius, tweet_json
+            FROM tweet_collector_tweets
+            WHERE collection_id = ''' + str(collection_id) + '''
+        '''
+        cur = self.con.cursor()
+        cur.execute(statement)
+        arr = cur.fetchall()
+
+        dic = {}
+        for i in range(len(arr)):
+            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][2], "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": {"lat": str(arr[i][4]), "lon": str(arr[i][5])}, "radius": arr[i][7]}
+        cur.close()
+        return dic
+
+    #for model training
     def get_geo_tweets(self, collection_id):
         statement = ''' 
             SELECT tweet_id, tweet_text, tweet_lat, tweet_lon
@@ -64,11 +88,10 @@ class ApproximationAPI:
         dic = {}
         for i in range(len(arr)):
             dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]),"lon": str(arr[i][3])}
-       
-        #out = json.dumps(dic, indent = 4)
         cur.close()
         return dic
 
+    #for tweets to be geolocated using model
     def get_non_geo_tweets(self, collection_id):
         statement = ''' 
             SELECT tweet_id, tweet_text
@@ -82,11 +105,10 @@ class ApproximationAPI:
         dic = {}
         for i in range(len(arr)):
             dic[arr[i][0]] = {"text": str(arr[i][1])}
-       
-        #out = json.dumps(dic, indent = 4)
         cur.close()
         return dic
 
+    #for visualization of tweets
     def get_tweet_vis_data(self, collection_id):
         statement = ''' 
             SELECT tweet_id, created_at, tweet_user, tweet_text, tweet_lat, tweet_lon, tweet_user_location, radius, tweet_json
@@ -101,8 +123,6 @@ class ApproximationAPI:
         for i in range(len(arr)):
             location = self.get_location_name(arr[i][4], arr[i][5])
             dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][2], "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
-       
-        #out = json.dumps(dic, indent = 4)
         cur.close()
         return dic
 
@@ -116,18 +136,8 @@ class ApproximationAPI:
         cur.execute(statement)
         self.con.commit()
         cur.close()
-
-    def test(self):
-        print("Testing connection to database: " + self.dbname)
-        print("Host: " + self.host)
-        print("User: " + self.user)
-       
-        self.con = self.connect()
-        print("Successfully connected to database")
-
-        if self.con:
-            self.close_connect()
-            print("Successfully closed connection from database")
+        return "Success!"
+        
 
 ###########################
 # FOR LOCAL DATABASE TEST #
@@ -150,3 +160,17 @@ class ApproximationAPI:
         else:
             self.connect()
             self.setup()
+
+    def import_tweets(self, filename):
+        statement = ''' 
+            COPY %s FROM STDIN WITH 
+                CSV 
+                HEADER
+                DELIMITER AS ',' 
+            '''
+        my_file = open(filename)
+        cur = self.con.cursor()
+        cur.copy_expert(sql=statement % 'tweets',file = my_file)
+        self.con.commit()
+        cur.close()
+        print("Successfully imported tweets")
