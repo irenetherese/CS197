@@ -3,7 +3,9 @@ import csv
 import pandas as pd
 import spacy
 
-files = ['yolanda nov 6.csv', 'yolanda nov 7.csv', 'yolanda nov 9.csv']
+# files = ['yolanda nov 6.csv', 'yolanda nov 7.csv', 'yolanda nov 9.csv']
+
+files = ['SalomePH-geo.csv']
 
 for filename in files:
 	df = pd.read_csv(filename, delimiter=',')

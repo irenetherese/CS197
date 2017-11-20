@@ -6,7 +6,7 @@ import _thread
 import time
 import datetime
 
-df = pd.DataFrame.from_csv('dataset_yolanda.csv')
+df = pd.DataFrame.from_csv('[pp_FULL] SalomePH-geo.csv')
 lemmas_list = [] 
 
 for lemmas in df['lemmas']:
@@ -19,11 +19,11 @@ for lemmas in df['lemmas']:
 #print(lemmas_list)
 
 dictionary = corpora.Dictionary(lemmas_list)
-dictionary.save('./yolanda_corpus.dict')
+dictionary.save('./salome_corpus.dict')
 
 clean_doc = [dictionary.doc2bow(text) for text in lemmas_list]
 
 tfidf = models.TfidfModel(clean_doc, normalize=True)
 
 lsi = LsiModel(corpus=tfidf[clean_doc], id2word=dictionary,num_topics=200)
-lsi.save('yolanda_model.txt')
+lsi.save('salome_model.txt')
