@@ -5,25 +5,39 @@ import pandas as pd
 import _thread
 import time
 import datetime
+from utils import make_dir
 
-df = pd.DataFrame.from_csv('[pp_FULL] SalomePH-geo.csv')
-lemmas_list = [] 
 
-for lemmas in df['lemmas']:
-	lemmas = str(lemmas)
-	lemmas = lemmas.replace('[','')
-	lemmas = lemmas.replace(']','')
-	lemmas = lemmas.replace(',','')
-	lemmas_list.append(lemmas.split())
+def train_model(filename, output_name):
+	output = {}
 
-#print(lemmas_list)
+	output['dataset'] = filename
+	output['output_name'] = output_name
 
-dictionary = corpora.Dictionary(lemmas_list)
-dictionary.save('./salome_corpus.dict')
+	df = pd.DataFrame.from_csv(filename)
+	lemmas_list = [] 
 
-clean_doc = [dictionary.doc2bow(text) for text in lemmas_list]
+	for lemmas in df['lemmas']:
+		lemmas = str(lemmas)
+		lemmas = lemmas.replace('[','')
+		lemmas = lemmas.replace(']','')
+		lemmas = lemmas.replace(',','')
+		lemmas_list.append(lemmas.split())
 
-tfidf = models.TfidfModel(clean_doc, normalize=True)
+	#print(lemmas_list)
+	dictionary = corpora.Dictionary(lemmas_list)
+	make_dir('./dicts/')
+	dictionary.save('./dicts/%s_corpus.dict' % output_name)
 
-lsi = LsiModel(corpus=tfidf[clean_doc], id2word=dictionary,num_topics=200)
-lsi.save('salome_model.txt')
+	output['dict'] = '%s_corpus.dict' % output_name
+
+	clean_doc = [dictionary.doc2bow(text) for text in lemmas_list]
+
+	tfidf = models.TfidfModel(clean_doc, normalize=True)
+
+	lsi = LsiModel(corpus=tfidf[clean_doc], id2word=dictionary,num_topics=200)
+	make_dir('./models')
+	lsi.save('./models/%s_model.txt' % output_name)
+	output['model'] = '%s_model.txt'%output_name
+
+	return output
