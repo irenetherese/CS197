@@ -5,18 +5,19 @@ import simplejson as json
 import decimal
 
 class ApproximationAPI:
-    def __init__(self, host, dbname, user, port):
+    def __init__(self, host, dbname, user, pw, port):
         self.host = host
         self.dbname = dbname
         self.user = user
         self.port = port
+        self.pw = pw
         self.con = None
 
 ###############
 # CONNECTIONS #
 ###############
     def connect(self):
-        self.con = psycopg2.connect("host='" + self.host + "' dbname='" + self.dbname + "' user='" + self.user + "' port='" + self.port + "'")   
+        self.con = psycopg2.connect("host='" + self.host + "' dbname='" + self.dbname + "' user='" + self.user + "' password='" + self.pw + "' port='" + self.port + "'")   
         return self.con
 
     def close_connect(self):
