@@ -1,7 +1,8 @@
 import psycopg2
 import sys
 import csv
-import json
+import simplejson as json
+import decimal
 
 class ApproximationAPI:
     def __init__(self, host, dbname, user, port):
@@ -41,11 +42,11 @@ class ApproximationAPI:
 #################
     def get_location_name(self, lat, lon):
         statement = ''' 
-            SELECT barangays.name_3, city_municipalities.name_2, provinces.name_1
+            SELECT tweet_collector_barangays.name_3, city_municipalities.name_2, provinces.name_1
             FROM city_municipalities 
-            INNER JOIN barangays ON city_municipalities.id_2 = barangays.id_2
+            INNER JOIN tweet_collector_barangays ON city_municipalities.id_2 = tweet_collector_barangays.id_2
             INNER JOIN provinces ON provinces.id_1 = city_municipalities.id_1
-            WHERE ST_INTERSECTS(ST_PointFromText('POINT( ''' + str(lon) + " " + str(lat) + ''')', 4326), barangays.geom);
+            WHERE ST_INTERSECTS(ST_PointFromText('POINT( ''' + str(lon) + " " + str(lat) + ''')', 4326), tweet_collector_barangays.geom);
         '''
         cur = self.con.cursor()
         cur.execute(statement)
@@ -54,7 +55,7 @@ class ApproximationAPI:
         if(fetch != None):
             out = {"name": {"barangay":fetch[0], "city": fetch[1], "province": fetch[2]}, "geo": {"lat": str(lat), "lon": str(lon)}}
         else:
-            out = {"name": "N/A", "geo": {"lat": str(lat), "lon": str(lon)}}
+            out = {"name": "N/A", "geo": {"lat": lat, "lon": lon}}
         return out
 
     #all tweets
@@ -122,14 +123,14 @@ class ApproximationAPI:
         dic = {}
         for i in range(len(arr)):
             location = self.get_location_name(arr[i][4], arr[i][5])
-            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][2], "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
+            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": json.loads(arr[i][8])['user']['name'],  "username": arr[i][2], "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
         cur.close()
         return dic
 
-    def update_location(self, tweet_id, lat, lng, radius):
+    def update_location(self, tweet_id, lat, lon, radius):
         statement = ''' 
             UPDATE tweet_collector_tweets
-            SET tweet_lat = ''' + str(lat) + ''', tweet_lng = ''' + str(lng) + ''', radius = ''' + str(radius) + '''
+            SET tweet_lat = ''' + str(lat) + ''', tweet_lon = ''' + str(lon) + ''', radius = ''' + str(radius) + '''
             WHERE tweet_id =''' + str(tweet_id) + ''';
         '''
         cur = self.con.cursor()
@@ -137,6 +138,17 @@ class ApproximationAPI:
         self.con.commit()
         cur.close()
         return "Success!"
+
+    def get_tweet_json(self, collection_id):
+        statement = ''' 
+            SELECT tweet_json
+            FROM tweet_collector_tweets
+            WHERE collection_id = ''' + str(collection_id) + '''
+            LIMIT 1
+        '''
+        cur = self.con.cursor()
+        cur.execute(statement)
+        return cur.fetchone()
         
 
 ###########################
@@ -154,7 +166,7 @@ class ApproximationAPI:
             cur.execute(open("migrations/phl_adm2s.sql","r").read())
             print("Imported gis data to city_municipalities table")
             cur.execute(open("migrations/phl_adm3s.sql","r").read())
-            print("Imported gis data to barangays table")
+            print("Imported gis data to tweet_collector_barangays table")
             self.con.commit()
             cur.close()
         else:
