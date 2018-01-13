@@ -5,6 +5,7 @@ from scipy.spatial import ConvexHull,Delaunay
 from haversine import haversine
 import os
 from datetime import datetime
+import location_approx.utils as utils
 
 def get_distance(id, point, cx, cy):
 	return [id, math.sqrt(math.pow((cx-point[0]),2) + math.pow(cy-point[1], 2))]
@@ -28,6 +29,7 @@ def get_convex_hull(n,data):
 		directory = data['output_name']
 
 	output = {}
+	weights = {}
 	isList = isinstance(data['filename'],list) and not isinstance(data['filename'],str)
 
 	init_time = (datetime.now()-start)
@@ -52,6 +54,8 @@ def get_convex_hull(n,data):
 					if counter > 0:
 						index = int(line.replace('(','').replace(')','').split(',')[0])
 						points.append([df['lat'][index],df['lng'][index]])
+						print(df['lat'][index])
+						weights[df['lat'][index]] = int(line.replace('(','').replace(')','').split(',')[1])
 						counter -= 1
 					else:
 						break
@@ -64,9 +68,11 @@ def get_convex_hull(n,data):
 
 				plt.plot(points[:,0], points[:,1], 'o')
 
-				cx = np.mean(hull.points[hull.vertices,0])
-				cy = np.mean(hull.points[hull.vertices,1])
-
+				sumx,sumy,sumz = 0,0,0
+				for pt in hull.points[hull.vertices]:
+					print(pt)
+					# p = utils.lon_lat_to_cartesian()
+		
 				plt.plot(cx, cy, 'o')
 
 				for simplex in hull.simplices:
@@ -120,6 +126,7 @@ def get_convex_hull(n,data):
 			if counter > 0:
 				index = int(line.replace('(','').replace(')','').split(',')[0])
 				points.append([df['lat'][index],df['lng'][index]])
+				weights[df['lat'][index]] = float(line.replace('(','').replace(')','').replace('\n','').split(',')[1])
 				counter -= 1
 			else:
 				break
@@ -129,17 +136,17 @@ def get_convex_hull(n,data):
 		hull = ConvexHull(points)
 		de = Delaunay(points)
 
-		import matplotlib.pyplot as plt
+		sumx,sumy,sumz,sumw = 0,0,0,0
+		for pt in hull.points[hull.vertices]: 
+			p = utils.lon_lat_to_cartesian(pt[0],pt[1])
+			sumx = weights[pt[0]] * p[0].astype(np.int64)
+			sumy = weights[pt[0]] * p[1].astype(np.int64)
+			sumz = weights[pt[0]] * p[2].astype(np.int64)
+			sumw = weights[pt[0]]
 
-		plt.plot(points[:,0], points[:,1], 'o')
-
-		cx = np.mean(hull.points[hull.vertices,0])
-		cy = np.mean(hull.points[hull.vertices,1])
-
-		plt.plot(cx, cy, 'o')
-
-		for simplex in hull.simplices:
-			plt.plot(points[simplex, 0], points[simplex, 1], 'k-')
+		m = utils.cartesian_to_lon_lat((sumx/sumw,sumy/sumw,sumz/sumw))
+		cx = m[0]
+		cy = m[1]
 
 		counter = 1
 		midpoints = []
