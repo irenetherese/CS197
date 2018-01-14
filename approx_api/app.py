@@ -10,7 +10,7 @@ import requests
 app = Flask(__name__)
 start = int(round(time.time()))
 
-a = approx_api.ApproximationAPI("ebayanihan-geolocation-approximation.cxwt0gorx62e.ap-southeast-1.rds.amazonaws.com", "ebayanihan_development",  "postgres", "nahinayabe",  "5432")
+a = approx_api.ApproximationAPI("127.0.0.1", "ebayanihan_production",  "devuser0", "devuser0",  "5432")
 a.test()
 a.connect()
 
@@ -44,6 +44,6 @@ if __name__ == '__main__':
    # if args.port == None:
    #     print("Missing required argument: -p/--port")
    #     sys.exit(1)
-     app.run(host='0.0.0.0', port=80, debug=False)
+     app.run(host='0.0.0.0', port=3000, debug=False)
    # app.run(debug=True)
 
