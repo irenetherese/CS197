@@ -79,7 +79,7 @@ class ApproximationAPI:
     #for model training
     def get_geo_tweets(self, collection_id):
         statement = ''' 
-            SELECT tweet_id, tweet_text, tweet_lat, tweet_lon
+            SELECT tweet_id, tweet_text, tweet_lat, tweet_lon, created_at
             FROM tweet_collector_tweets
             WHERE tweet_lat IS NOT NULL AND tweet_lon IS NOT NULL AND collection_id = ''' + str(collection_id) + '''
         '''
@@ -89,14 +89,30 @@ class ApproximationAPI:
 
         dic = {}
         for i in range(len(arr)):
-            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]),"lon": str(arr[i][3])}
+            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]),"lon": str(arr[i][3]),"created_at": str(arr[i][4])}
+        cur.close()
+        return dic
+
+    def get_all_geo_tweets(self):
+        statement = ''' 
+            SELECT tweet_id, tweet_text, tweet_lat, tweet_lon, created_at
+            FROM tweet_collector_tweets
+            WHERE tweet_lat IS NOT NULL AND tweet_lon IS NOT NULL
+        '''
+        cur = self.con.cursor()
+        cur.execute(statement)
+        arr = cur.fetchall()
+
+        dic = {}
+        for i in range(len(arr)):
+            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]),"lon": str(arr[i][3]), "created_at": str(arr[i][4])}
         cur.close()
         return dic
 
     #for tweets to be geolocated using model
     def get_non_geo_tweets(self, collection_id):
         statement = ''' 
-            SELECT tweet_id, tweet_text
+            SELECT tweet_id, tweet_text, created_at
             FROM tweet_collector_tweets
             WHERE tweet_lat ISNULL AND tweet_lon ISNULL AND collection_id = ''' + str(collection_id) + '''
         '''
@@ -106,10 +122,25 @@ class ApproximationAPI:
 
         dic = {}
         for i in range(len(arr)):
-            dic[arr[i][0]] = {"text": str(arr[i][1])}
+            dic[arr[i][0]] = {"text": str(arr[i][1]), "created_at": str(arr[i][2])}
         cur.close()
         return dic
 
+    def get_all_non_geo_tweets(self):
+        statement = ''' 
+            SELECT tweet_id, tweet_text, created_at
+            FROM tweet_collector_tweets
+            WHERE tweet_lat ISNULL AND tweet_lon ISNULL
+        '''
+        cur = self.con.cursor()
+        cur.execute(statement)
+        arr = cur.fetchall()
+
+        dic = {}
+        for i in range(len(arr)):
+            dic[arr[i][0]] = {"text": str(arr[i][1]), "created_at": str(arr[i][2])}
+        cur.close()
+        return dic
     #for visualization of tweets
     def get_tweet_vis_data(self, collection_id):
         statement = ''' 

@@ -26,6 +26,14 @@ def get_geo_tweets(collection_id):
 def get_non_geo_tweets(collection_id):
     return jsonify(a.get_non_geo_tweets(collection_id))
 
+@app.route("/get_geo_tweets")
+def get_all_geo_tweets():
+    return jsonify(a.get_all_geo_tweets())
+
+@app.route("/get_non_geo_tweets")
+def get_all_non_geo_tweets():
+    return jsonify(a.get_all_non_geo_tweets())
+
 @app.route("/get_tweet_vis_data/<int:collection_id>")
 def get_tweet_vis_data(collection_id):
     return jsonify(a.get_tweet_vis_data(collection_id))
