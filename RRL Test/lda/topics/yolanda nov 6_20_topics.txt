@@ -1,0 +1,15 @@
+TOPICS: 
+ ----- 
+ 
+TOPIC 0: (0, '0.100*"\'cdo\'" + 0.100*"\'many\'" + 0.100*"\'family\'" + 0.100*"\'stay\'" + 0.100*"\'overnight\'" + 0.100*"\'evacuation\'" + 0.100*"\'center\'" + 0.100*"\'expect\'" + 0.100*"\'yolandaph\'" + 0.100*"\'landfall\'"')
+TOPIC 1: (1, '0.100*"\'cdo\'" + 0.100*"\'many\'" + 0.100*"\'family\'" + 0.100*"\'stay\'" + 0.100*"\'overnight\'" + 0.100*"\'evacuation\'" + 0.100*"\'center\'" + 0.100*"\'expect\'" + 0.100*"\'yolandaph\'" + 0.100*"\'landfall\'"')
+TOPIC 2: (2, '0.100*"\'cdo\'" + 0.100*"\'many\'" + 0.100*"\'family\'" + 0.100*"\'stay\'" + 0.100*"\'overnight\'" + 0.100*"\'evacuation\'" + 0.100*"\'center\'" + 0.100*"\'expect\'" + 0.100*"\'yolandaph\'" + 0.100*"\'landfall\'"')
+TOPIC 3: (3, '0.100*"\'cdo\'" + 0.100*"\'many\'" + 0.100*"\'family\'" + 0.100*"\'stay\'" + 0.100*"\'overnight\'" + 0.100*"\'evacuation\'" + 0.100*"\'center\'" + 0.100*"\'expect\'" + 0.100*"\'yolandaph\'" + 0.100*"\'landfall\'"')
+TOPIC 4: (4, '0.100*"\'cdo\'" + 0.100*"\'many\'" + 0.100*"\'family\'" + 0.100*"\'stay\'" + 0.100*"\'overnight\'" + 0.100*"\'evacuation\'" + 0.100*"\'center\'" + 0.100*"\'expect\'" + 0.100*"\'yolandaph\'" + 0.100*"\'landfall\'"')
+-----
+ 
+TOPIC DISTRIBUTION: 
+-----
+ 
+0: [(0, 0.34831612073645446), (1, 0.018753721998181365), (2, 0.018753722106729043), (3, 0.5954227131604537), (4, 0.018753721998181365)]
+--- 3
