@@ -181,6 +181,18 @@ class ApproximationAPI:
         cur = self.con.cursor()
         cur.execute(statement)
         return cur.fetchone()
+
+    def get_collections(self):
+        statement = '''SELECT id, title FROM tweet_collector_collections'''
+        cur = self.con.cursor()
+        cur.execute(statement)
+        arr = cur.fetchall()
+
+        dic = {}
+        for i in range(len(arr)):
+            dic[arr[i][0]] = {"title": str(arr[i][1])}
+        cur.close()
+        return dic
         
 
 ###########################
