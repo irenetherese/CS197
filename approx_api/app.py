@@ -7,6 +7,7 @@ import optparse
 import time
 import approx_api
 import requests
+from datetime import datetime
 
 
 class FloatConverter(BaseFloatConverter):
@@ -56,6 +57,30 @@ def update_location(tweet_id, lat, lng, radius):
 @app.route("/get_collections")
 def get_collections():
     return jsonify(a.get_collections())
+
+@app.route("/get_geo_tweets/<int:collection_id>/<int:year>/<int:month>/<int:day>/<int:hour>")
+def get_geo_tweets(collection_id, year, month, day, hour):
+  try:
+    date_start = datetime(year, month, day, hour, 0) 
+    date_end = datetime(year, month, day, hour + 1, 0)
+  except:
+    return "Error: Cannot calculate date"
+  
+    return jsonify(a.get_geo_tweets(collection_id, date_start, date_end))
+
+@app.route("/get_non_geo_tweets/<int:collection_id>")
+def get_non_geo_tweets(collection_id, year, month, day, hour):
+  try:
+    date_start = datetime(year, month, day, hour, 0) 
+    date_end = datetime(year, month, day, hour + 1, 0)
+  except:
+    return "Error: Cannot calculate date"
+
+    return jsonify(a.get_non_geo_tweets(collection_id, date_start, date_end))
+
+@app.route("/get_tweet_vis_data/<int:collection_id>/<int:start_row>/<int:num_rows>")
+def get_tweet_vis_data(collection_id, start_row, num_rows):
+    return jsonify(a.get_tweet_vis_data(collection_id, start_row, num_rows))
 
 class FloatConverter(BaseFloatConverter):
     regex = r'-?\d+(\.\d+)?'

@@ -93,6 +93,22 @@ class ApproximationAPI:
         cur.close()
         return dic
 
+    def get_geo_tweets(self, collection_id, date_start, date_end):
+        statement = ''' 
+            SELECT tweet_id, tweet_text, tweet_lat, tweet_lon, created_at
+            FROM tweet_collector_tweets
+            WHERE tweet_lat IS NOT NULL AND tweet_lon IS NOT NULL AND collection_id = ''' + str(collection_id) + '''
+            AND created_at BETWEEN ''' + created_at + ''' AND ''' + date_end  
+        cur = self.con.cursor()
+        cur.execute(statement)
+        arr = cur.fetchall()
+
+        dic = {}
+        for i in range(len(arr)):
+            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]),"lon": str(arr[i][3]),"created_at": str(arr[i][4])}
+        cur.close()
+        return dic
+
     def get_all_geo_tweets(self):
         statement = ''' 
             SELECT tweet_id, tweet_text, tweet_lat, tweet_lon, created_at
@@ -141,6 +157,23 @@ class ApproximationAPI:
             dic[arr[i][0]] = {"text": str(arr[i][1]), "created_at": str(arr[i][2])}
         cur.close()
         return dic
+
+    def get_non_geo_tweets(self, collection_id, date_start, date_end):
+        statement = ''' 
+            SELECT tweet_id, tweet_text, created_at
+            FROM tweet_collector_tweets
+            WHERE tweet_lat ISNULL AND tweet_lon ISNULL AND collection_id = ''' + str(collection_id) + '''
+            AND created_at BETWEEN ''' + created_at + ''' AND ''' + date_end
+        cur = self.con.cursor()
+        cur.execute(statement)
+        arr = cur.fetchall()
+
+        dic = {}
+        for i in range(len(arr)):
+            dic[arr[i][0]] = {"text": str(arr[i][1]), "created_at": str(arr[i][2])}
+        cur.close()
+        return dic
+
     #for visualization of tweets
     def get_tweet_vis_data(self, collection_id):
         statement = ''' 
@@ -158,6 +191,27 @@ class ApproximationAPI:
             dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": json.loads(arr[i][8])['user']['name'],  "username": arr[i][2], "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
         cur.close()
         return dic
+
+        #for limited
+    def get_tweet_vis_data(self, start_row, num_rows):
+        statement = ''' 
+            SELECT tweet_id, created_at, tweet_user, tweet_text, tweet_lat, tweet_lon, tweet_user_location, radius, tweet_json
+            FROM tweet_collector_tweets
+            WHERE tweet_lat IS NOT NULL AND tweet_lon IS NOT NULL AND collection_id = ''' + str(collection_id) + '''
+            ORDER BY created_at
+            LIMIT ''' + num_rows + ''' OFFSET ''' + start_row
+
+        cur = self.con.cursor()
+        cur.execute(statement)
+        arr = cur.fetchall()
+
+        dic = {}
+        for i in range(len(arr)):
+            location = self.get_location_name(arr[i][4], arr[i][5])
+            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": json.loads(arr[i][8])['user']['name'],  "username": arr[i][2], "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
+        cur.close()
+        return dic
+        
 
     def update_location(self, tweet_id, lat, lon, radius):
         statement = ''' 
@@ -193,7 +247,23 @@ class ApproximationAPI:
             dic[arr[i][0]] = {"title": str(arr[i][1])}
         cur.close()
         return dic
-        
+
+     def get_tweets(self, collection_id, date_start, date_end):
+        statement = ''' 
+            SELECT tweet_id, created_at, tweet_user, tweet_text, tweet_lat, tweet_lon, tweet_user_location, radius, tweet_json
+            FROM tweet_collector_tweets
+            WHERE collection_id = ''' + str(collection_id) + '''
+            AND created_at BETWEEN ''' + created_at + ''' AND ''' + date_end 
+        cur = self.con.cursor()
+        cur.execute(statement)
+        arr = cur.fetchall()
+
+        dic = {}
+        for i in range(len(arr)):
+            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][2], "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": {"lat": str(arr[i][4]), "lon": str(arr[i][5])}, "radius": arr[i][7]}
+        cur.close()
+        return dic
+
 
 ###########################
 # FOR LOCAL DATABASE TEST #
