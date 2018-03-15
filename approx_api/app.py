@@ -17,6 +17,19 @@ a = approx_api.ApproximationAPI("192.168.1.120", "ebayanihan_development",  "pos
 a.test()
 a.connect()
 
+def get_all_request_values(request_field_list):
+    """Appends requested value to input_fields if value is not None"""
+    input_fields = {}
+    for field in request_field_list:
+        input_fields[field] = request.values.get(field, None)
+        if input_fields[field] is not None:
+            if input_fields[field] == "":
+                input_fields[field] = None
+            else:
+                input_fields[field] = input_fields[field].strip()
+    return input_fields
+
+
 @app.route("/")
 def hello_world():
     return "Hello World Flask Test!"
@@ -33,9 +46,10 @@ def get_non_geo_tweets(collection_id):
 def get_tweet_vis_data(collection_id):
     return jsonify(a.get_tweet_vis_data(collection_id))
 
-@app.route("/get_city/<float:lat>/<float:lon>")
+@app.route("/get_city")
 def get_place(lat, lon):
-    return jsonify(a.get_location_name(lat, lon))
+    input_fields = get_all_request_values(['lat','lon'])
+    return jsonify(a.get_location_name(input_fields['lat'], input_fields['lon']))
 
 @app.route("/update/<float:tweet_id>/<float:lat>/<float:lon>/<int:radius>")
 def update_location(tweet_id, lat, lng, radius):

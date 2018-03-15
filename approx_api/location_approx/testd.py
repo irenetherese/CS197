@@ -1,6 +1,6 @@
-from location_approx.lsa_model import train_model
-from location_approx.matrix_similarity import get_matrix_similarity
-from location_approx.convex_hull import get_convex_hull
+from lsa_model import train_model
+from matrix_similarity import get_matrix_similarity
+from convex_hull import get_convex_hull
 
 tweet = ['storm', 'make', 'hard', 'sleep', 'yolanda', 'unta', 'muabot', 'sudden', 'deep', 'slumber']
 

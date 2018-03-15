@@ -17,7 +17,7 @@ def in_hull(p, hull):
 
 def get_convex_hull(n,data):
 	start = datetime.now()
-	df = pd.DataFrame.from_csv('./location_approx/%s' % data['dataset'])
+	df = pd.DataFrame.from_csv('./%s' % data['dataset'])
 	lat_list = [] 
 	coords = []
 	main_index = 0
@@ -31,14 +31,14 @@ def get_convex_hull(n,data):
 	isList = isinstance(data['filename'],list) and not isinstance(data['filename'],str)
 
 	init_time = (datetime.now()-start)
-	print("convex_hull_init: %s" % (datetime.now()-start))
+	# print("convex_hull_init: %s" % (datetime.now()-start))
 	if isList:
 		output_list = []
 		out_counter = 0
-		for filename in os.listdir('./location_approx/similarities/%s' % directory):
+		for filename in os.listdir('./similarities/%s' % directory):
 			start = datetime.now()
 			if filename in data['filename']:
-				similarities = open('./location_approx/similarities/%s/%s' %(directory,filename),'r')
+				similarities = open('./similarities/%s/%s' %(directory,filename),'r')
 
 				points = []
 
@@ -60,17 +60,8 @@ def get_convex_hull(n,data):
 				hull = ConvexHull(points)
 				de = Delaunay(points)
 
-				import matplotlib.pyplot as plt
-
-				plt.plot(points[:,0], points[:,1], 'o')
-
 				cx = np.mean(hull.points[hull.vertices,0])
 				cy = np.mean(hull.points[hull.vertices,1])
-
-				plt.plot(cx, cy, 'o')
-
-				for simplex in hull.simplices:
-					plt.plot(points[simplex, 0], points[simplex, 1], 'k-')
 
 				counter = 1
 				midpoints = []
@@ -89,7 +80,8 @@ def get_convex_hull(n,data):
 
 				distances.sort(key=lambda x: x[1])
 
-				index = distances[0][1]
+				index = haversine((cx,cy),(midpoints[distances[0][0]][0],midpoints[distances[0][0]][1]))
+
 
 				sample_dict = {}
 
@@ -97,10 +89,10 @@ def get_convex_hull(n,data):
 				sample_dict['radius'] = index
 				sample_dict['filename'] = filename
 				sample_dict['inHull'] = in_hull(p=np.array([df['lat'][main_index],df['lng'][main_index]]),hull=de)	
-
+				sample_dict['time'] = str(datetime.now()-start+init_time+data['times'][out_counter])
 				output_list.append(sample_dict)
 
-				print("convex_hull_init_%i: %s" % (main_index, datetime.now()-start+init_time))
+				# print("convex_hull_init_%i: %s" % (main_index, datetime.now()-start+init_time))
 				
 				out_counter += 1
 		return output_list

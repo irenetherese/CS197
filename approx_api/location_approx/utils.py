@@ -13,15 +13,13 @@ def lon_lat_to_cartesian(lat, lon):
     x =  R * np.cos(lat_r) * np.cos(lon_r)
     y = R * np.cos(lat_r) * np.sin(lon_r)
     z = R * np.sin(lat_r)
-    print(lat_r)
-    print(lon_r)
     return x,y,z
 
 def cartesian_to_lon_lat(coords):
 	x = coords[0]
 	z = coords[2]
 	R = 6378137
-	
+
 	lat_r = np.arcsin(z/R)
 	lon_r = np.arccos(x/(R*np.cos(lat_r)))
 
