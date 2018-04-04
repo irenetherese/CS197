@@ -5,7 +5,7 @@ import pandas as pd
 import _thread
 import time
 from datetime import datetime
-from utils import make_dir
+from location_approx.utils import make_dir
  
 
 def train_model_tfidf(filename, output_name):
