@@ -128,7 +128,7 @@ def get_tweet_vis_data_limit(collection_id, start_row):
 def get_tweet_vis_data_limit_ph(collection_id, start_row):
     return jsonify(a.get_tweet_vis_data_limit_ph(collection_id, start_row))
 
-@app.route("/create_handler/<int thread_id>")
+@app.route("/create_handler/<int:thread_id>")
 def create_handler(thread_id):
     return os.system('create_handler.py ' + str(thread_id))
 
