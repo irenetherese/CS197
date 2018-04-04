@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 import requests
-from utils import make_dir
+from location_approx.utils import make_dir
 from haversine import haversine
 
 

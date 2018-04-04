@@ -3,7 +3,7 @@ from matrix_similarity import get_matrix_similarity,get_matrix_similarity_raw
 from convex_hull import get_convex_hull
 from convex_hull_unweighted import get_convex_hull as get_ch
 from random import *
-import utils 
+import location_approx.utils 
 import pandas as pd
 
 for i in range(0,10):
