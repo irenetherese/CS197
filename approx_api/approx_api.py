@@ -93,12 +93,12 @@ class ApproximationAPI:
         cur.close()
         return dic
 
-    def get_geo_tweets(self, collection_id, date_start, date_end):
+    def get_geo_tweets_hour(self, collection_id, date_start, date_end):
         statement = ''' 
             SELECT tweet_id, tweet_text, tweet_lat, tweet_lon, created_at
             FROM tweet_collector_tweets
             WHERE tweet_lat IS NOT NULL AND tweet_lon IS NOT NULL AND collection_id = ''' + str(collection_id) + '''
-            AND created_at BETWEEN ''' + created_at + ''' AND ''' + date_end  
+            AND created_at BETWEEN ''' + date_start.strftime("'%Y-%m-%d %H:%M:%S'") + ''' AND ''' + date_end.strftime("'%Y-%m-%d %H:%M:%S'")  
         cur = self.con.cursor()
         cur.execute(statement)
         arr = cur.fetchall()
@@ -158,12 +158,12 @@ class ApproximationAPI:
         cur.close()
         return dic
 
-    def get_non_geo_tweets(self, collection_id, date_start, date_end):
+    def get_non_geo_tweets_hour(self, collection_id, date_start, date_end):
         statement = ''' 
             SELECT tweet_id, tweet_text, created_at
             FROM tweet_collector_tweets
             WHERE tweet_lat ISNULL AND tweet_lon ISNULL AND collection_id = ''' + str(collection_id) + '''
-            AND created_at BETWEEN ''' + created_at + ''' AND ''' + date_end
+            AND created_at BETWEEN ''' + date_start.strftime("'%Y-%m-%d %H:%M:%S'") + ''' AND ''' + date_end.strftime("'%Y-%m-%d %H:%M:%S'")    
         cur = self.con.cursor()
         cur.execute(statement)
         arr = cur.fetchall()
@@ -188,18 +188,18 @@ class ApproximationAPI:
         dic = {}
         for i in range(len(arr)):
             location = self.get_location_name(arr[i][4], arr[i][5])
-            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": json.loads(arr[i][8])['user']['name'],  "username": arr[i][2], "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
+            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][8]['user']['name'],  "username": arr[i][2], "profile_pic": arr[i][8]['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
         cur.close()
         return dic
 
         #for limited
-    def get_tweet_vis_data(self, start_row, num_rows):
+    def get_tweet_vis_data_limit(self, collection_id, start_row):
         statement = ''' 
             SELECT tweet_id, created_at, tweet_user, tweet_text, tweet_lat, tweet_lon, tweet_user_location, radius, tweet_json
             FROM tweet_collector_tweets
             WHERE tweet_lat IS NOT NULL AND tweet_lon IS NOT NULL AND collection_id = ''' + str(collection_id) + '''
             ORDER BY created_at
-            LIMIT ''' + num_rows + ''' OFFSET ''' + start_row
+            LIMIT 10 OFFSET ''' + str(start_row)
 
         cur = self.con.cursor()
         cur.execute(statement)
@@ -208,7 +208,7 @@ class ApproximationAPI:
         dic = {}
         for i in range(len(arr)):
             location = self.get_location_name(arr[i][4], arr[i][5])
-            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": json.loads(arr[i][8])['user']['name'],  "username": arr[i][2], "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
+            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][8]['user']['name'],  "username": arr[i][2], "profile_pic": arr[i][8]['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
         cur.close()
         return dic
         
@@ -248,7 +248,7 @@ class ApproximationAPI:
         cur.close()
         return dic
 
-     def get_tweets(self, collection_id, date_start, date_end):
+    def get_tweets(self, collection_id, date_start, date_end):
         statement = ''' 
             SELECT tweet_id, created_at, tweet_user, tweet_text, tweet_lat, tweet_lon, tweet_user_location, radius, tweet_json
             FROM tweet_collector_tweets
