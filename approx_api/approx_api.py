@@ -3,6 +3,7 @@ import sys
 import csv
 import json
 
+
 class ApproximationAPI:
     def __init__(self, host, dbname, user, port):
         self.host = host
@@ -11,23 +12,24 @@ class ApproximationAPI:
         self.port = port
         self.con = None
 
-###############
-# CONNECTIONS #
-###############
+    ###############
+    # CONNECTIONS #
+    ###############
     def connect(self):
-        self.con = psycopg2.connect("host='" + self.host + "' dbname='" + self.dbname + "' user='" + self.user + "' port='" + self.port + "'")   
+        self.con = psycopg2.connect(
+            "host='" + self.host + "' dbname='" + self.dbname + "' user='" + self.user + "' port='" + self.port + "'")
         return self.con
 
     def close_connect(self):
         self.con.close()
         self.con = None
 
-    #test connection
+    # test connection
     def test(self):
         print("Testing connection to database: " + self.dbname)
         print("Host: " + self.host)
         print("User: " + self.user)
-       
+
         self.con = self.connect()
         print("Successfully connected to database")
 
@@ -36,9 +38,10 @@ class ApproximationAPI:
             print("Successfully closed connection from database")
 
 
-#################
-# FUNCTIONALITY #
-#################
+            #################
+            # FUNCTIONALITY #
+            #################
+
     def get_location_name(self, lat, lon):
         statement = ''' 
             SELECT barangays.name_3, city_municipalities.name_2, provinces.name_1
@@ -51,13 +54,14 @@ class ApproximationAPI:
         cur.execute(statement)
         fetch = cur.fetchone()
         cur.close()
-        if(fetch != None):
-            out = {"name": {"barangay":fetch[0], "city": fetch[1], "province": fetch[2]}, "geo": {"lat": str(lat), "lon": str(lon)}}
+        if (fetch != None):
+            out = {"name": {"barangay": fetch[0], "city": fetch[1], "province": fetch[2]},
+                   "geo": {"lat": str(lat), "lon": str(lon)}}
         else:
             out = {"name": "N/A", "geo": {"lat": str(lat), "lon": str(lon)}}
         return out
 
-    #all tweets
+    # all tweets
     def get_tweets(self, collection_id):
         statement = ''' 
             SELECT tweet_id, created_at, tweet_user, tweet_text, tweet_lat, tweet_lon, tweet_user_location, radius, tweet_json
@@ -70,11 +74,14 @@ class ApproximationAPI:
 
         dic = {}
         for i in range(len(arr)):
-            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][2], "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": {"lat": str(arr[i][4]), "lon": str(arr[i][5])}, "radius": arr[i][7]}
+            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][2],
+                              "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3],
+                              "user_location": arr[i][6], "location": {"lat": str(arr[i][4]), "lon": str(arr[i][5])},
+                              "radius": arr[i][7]}
         cur.close()
         return dic
 
-    #for model training
+    # for model training
     def get_geo_tweets(self, collection_id):
         statement = ''' 
             SELECT tweet_id, tweet_text, tweet_lat, tweet_lon
@@ -87,11 +94,11 @@ class ApproximationAPI:
 
         dic = {}
         for i in range(len(arr)):
-            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]),"lon": str(arr[i][3])}
+            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]), "lon": str(arr[i][3])}
         cur.close()
         return dic
 
-    #for tweets to be geolocated using model
+    # for tweets to be geolocated using model
     def get_non_geo_tweets(self, collection_id):
         statement = ''' 
             SELECT tweet_id, tweet_text
@@ -108,7 +115,7 @@ class ApproximationAPI:
         cur.close()
         return dic
 
-    #for visualization of tweets
+    # for visualization of tweets
     def get_tweet_vis_data(self, collection_id):
         statement = ''' 
             SELECT tweet_id, created_at, tweet_user, tweet_text, tweet_lat, tweet_lon, tweet_user_location, radius, tweet_json
@@ -122,7 +129,9 @@ class ApproximationAPI:
         dic = {}
         for i in range(len(arr)):
             location = self.get_location_name(arr[i][4], arr[i][5])
-            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][2], "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
+            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][2],
+                              "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3],
+                              "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
         cur.close()
         return dic
 
@@ -137,23 +146,22 @@ class ApproximationAPI:
         self.con.commit()
         cur.close()
         return "Success!"
-        
 
-###########################
-# FOR LOCAL DATABASE TEST #
-###########################
+    ###########################
+    # FOR LOCAL DATABASE TEST #
+    ###########################
     def setup(self):
         if self.con:
             cur = self.con.cursor()
-            cur.execute(open("migrations/tables.sql","r").read())
+            cur.execute(open("migrations/tables.sql", "r").read())
             print("Created tables.")
-            cur.execute(open("migrations/phl_adm0s.sql","r").read())
+            cur.execute(open("migrations/phl_adm0s.sql", "r").read())
             print("Imported gis data to countries table")
-            cur.execute(open("migrations/phl_adm1s.sql","r").read())
+            cur.execute(open("migrations/phl_adm1s.sql", "r").read())
             print("Imported gis data to provinces table")
-            cur.execute(open("migrations/phl_adm2s.sql","r").read())
+            cur.execute(open("migrations/phl_adm2s.sql", "r").read())
             print("Imported gis data to city_municipalities table")
-            cur.execute(open("migrations/phl_adm3s.sql","r").read())
+            cur.execute(open("migrations/phl_adm3s.sql", "r").read())
             print("Imported gis data to barangays table")
             self.con.commit()
             cur.close()
@@ -170,7 +178,7 @@ class ApproximationAPI:
             '''
         my_file = open(filename)
         cur = self.con.cursor()
-        cur.copy_expert(sql=statement % 'tweets',file = my_file)
+        cur.copy_expert(sql=statement % 'tweets', file=my_file)
         self.con.commit()
         cur.close()
         print("Successfully imported tweets")
