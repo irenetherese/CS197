@@ -385,7 +385,7 @@ class ApproximationAPI:
         cur.close()
         return dic
 
-    def get_geo_tweets_ph(self, model_id):
+    def get_model_tweets_ph(self, model_id):
         statement = ''' 
             SELECT tweet_id, tweet_text, tweet_lat, tweet_lon, created_at
             FROM model_tweets
