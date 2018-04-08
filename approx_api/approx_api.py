@@ -229,7 +229,7 @@ class ApproximationAPI:
     #for visualization of tweets
     def get_tweet_vis_data(self, collection_id):
         statement = ''' 
-            SELECT tweet_id, created_at, tweet_user, tweet_text, tweet_lat, tweet_lon, tweet_user_location, radius, tweet_json
+            SELECT tweet_id, created_at, tweet_user, tweet_text, tweet_lat, tweet_lon, tweet_user_location, radius, tweet_json, approx_lat, approx_lon
             FROM tweet_collector_tweets
             WHERE tweet_lat IS NOT NULL AND tweet_lon IS NOT NULL AND collection_id = ''' + str(collection_id) + '''
         '''
@@ -240,13 +240,14 @@ class ApproximationAPI:
         dic = {}
         for i in range(len(arr)):
             location = self.get_location_name(arr[i][4], arr[i][5])
-            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][8]['user']['name'],  "username": arr[i][2], "profile_pic": arr[i][8]['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
+            approx_location = self.get_location_name(arr[i][9], arr[i][10])
+            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][8]['user']['name'],  "username": arr[i][2], "profile_pic": arr[i][8]['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": location, "approx_location": approx_location, "radius": arr[i][7]}
         cur.close()
         return dic
 
     def get_tweet_vis_data_ph(self, collection_id):
         statement = ''' 
-            SELECT tweet_id, created_at, tweet_user, tweet_text, tweet_lat, tweet_lon, tweet_user_location, radius, tweet_json
+            SELECT tweet_id, created_at, tweet_user, tweet_text, tweet_lat, tweet_lon, tweet_user_location, radius, tweet_json, approx_lat, approx_lon
             FROM tweet_collector_tweets
             WHERE tweet_lat IS NOT NULL AND tweet_lon IS NOT NULL AND collection_id = ''' + str(collection_id) + '''
             AND is_inPH(cast(tweet_lon as varchar), cast(tweet_lat as varchar)); 
@@ -258,7 +259,8 @@ class ApproximationAPI:
         dic = {}
         for i in range(len(arr)):
             location = self.get_location_name(arr[i][4], arr[i][5])
-            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][8]['user']['name'],  "username": arr[i][2], "profile_pic": arr[i][8]['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
+            approx_location = self.get_location_name(arr[i][9], arr[i][10])
+            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][8]['user']['name'],  "username": arr[i][2], "profile_pic": arr[i][8]['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": location, "approx_location": approx_location, "radius": arr[i][7]}
         cur.close()
         return dic
 
