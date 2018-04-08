@@ -370,7 +370,37 @@ class ApproximationAPI:
         print("Performed insert")
         return 0
 
+    def get_model_tweets(self, model_id):
+        statement = ''' 
+            SELECT tweet_id, tweet_text, tweet_lat, tweet_lon, created_at
+            FROM model_tweets
+            WHERE tweet_lat IS NOT NULL AND tweet_lon IS NOT NULL AND model_name  = ''' + "'" + str(model_id) + "'"
+        cur = self.con.cursor()
+        cur.execute(statement)
+        arr = cur.fetchall()
 
+        dic = {}
+        for i in range(len(arr)):
+            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]),"lon": str(arr[i][3]),"created_at": str(arr[i][4])}
+        cur.close()
+        return dic
+
+    def get_geo_tweets_ph(self, model_id):
+        statement = ''' 
+            SELECT tweet_id, tweet_text, tweet_lat, tweet_lon, created_at
+            FROM model_tweets
+            WHERE tweet_lat IS NOT NULL AND tweet_lon IS NOT NULL AND model_name = ''' + "'" + str(model_id) + "'" + '''
+            AND is_inPH(cast(tweet_lon as varchar), cast(tweet_lat as varchar)); 
+        '''
+        cur = self.con.cursor()
+        cur.execute(statement)
+        arr = cur.fetchall()
+
+        dic = {}
+        for i in range(len(arr)):
+            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]),"lon": str(arr[i][3]),"created_at": str(arr[i][4])}
+        cur.close()
+        return dic
 
 ###########################
 # FOR LOCAL DATABASE TEST #

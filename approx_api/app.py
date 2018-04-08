@@ -146,6 +146,15 @@ def approx_location():
 	print(data['filename'])
 	return jsonify(get_convex_hull(10,data))
 
+
+@app.route("/get_model_tweets/<int:model_id>")
+def get_model_tweets(model_id):
+    return jsonify(a.get_model_tweets(model_id))
+
+@app.route("/get_model_tweets/ph/<int:model_id>")
+def get_model_tweets_ph(model_id):
+    return jsonify(a.get_model_tweets_ph(model_id))
+
 if __name__ == '__main__':
    # parser.add_option('-p', '--port', action='store', dest='port', help='The port to listen on.')
    # (args, _) = parser.parse_args()
