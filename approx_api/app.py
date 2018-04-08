@@ -2,6 +2,7 @@
 from flask import Flask, jsonify, request
 from werkzeug.routing import FloatConverter as BaseFloatConverter
 
+import os
 import sys
 import optparse
 import time
@@ -77,10 +78,11 @@ def get_tweet_vis_data(collection_id):
 def get_tweet_vis_data_ph(collection_id):
     return jsonify(a.get_tweet_vis_data_ph(collection_id))
 
-@app.route("/get_city")
+@app.route("/get_city/<float:lat>/<float:lon>")
 def get_place(lat, lon):
-    input_fields = get_all_request_values(['lat','lon'])
-    return jsonify(a.get_location_name(input_fields['lat'], input_fields['lon']))
+    #input_fields = get_all_request_values(['lat','lon'])
+    #return jsonify(a.get_location_name(input_fields['lat'], input_fields['lon']))
+    return jsonify(a.get_location_name(lat,lon))
 
 @app.route("/update/<float:tweet_id>/<float:lat>/<float:lon>/<int:radius>")
 def update_location(tweet_id, lat, lng, radius):
