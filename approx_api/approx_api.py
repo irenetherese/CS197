@@ -43,21 +43,25 @@ class ApproximationAPI:
 # FUNCTIONALITY #
 #################
     def get_location_name(self, lat, lon):
-        statement = ''' 
-            SELECT tweet_collector_barangays.name_3, city_municipalities.name_2, provinces.name_1
-            FROM city_municipalities 
-            INNER JOIN tweet_collector_barangays ON city_municipalities.id_2 = tweet_collector_barangays.id_2
-            INNER JOIN provinces ON provinces.id_1 = city_municipalities.id_1
-            WHERE ST_INTERSECTS(ST_PointFromText('POINT( ''' + str(lon) + " " + str(lat) + ''')', 4326), tweet_collector_barangays.geom);
-        '''
-        cur = self.con.cursor()
-        cur.execute(statement)
-        fetch = cur.fetchone()
-        cur.close()
-        if(fetch != None):
-            out = {"name": {"barangay":fetch[0], "city": fetch[1], "province": fetch[2]}, "geo": {"lat": str(lat), "lon": str(lon)}}
-        else:
+        try:
+            statement = ''' 
+                SELECT tweet_collector_barangays.name_3, city_municipalities.name_2, provinces.name_1
+                FROM city_municipalities 
+                INNER JOIN tweet_collector_barangays ON city_municipalities.id_2 = tweet_collector_barangays.id_2
+                INNER JOIN provinces ON provinces.id_1 = city_municipalities.id_1
+                WHERE ST_INTERSECTS(ST_PointFromText('POINT( ''' + str(lon) + " " + str(lat) + ''')', 4326), tweet_collector_barangays.geom);
+            '''
+            cur = self.con.cursor()
+            cur.execute(statement)
+            fetch = cur.fetchone()
+            cur.close()
+            if(fetch != None):
+                out = {"name": {"barangay":fetch[0], "city": fetch[1], "province": fetch[2]}, "geo": {"lat": str(lat), "lon": str(lon)}}
+            else:
+                out = {"name": "N/A", "geo": {"lat": lat, "lon": lon}}
+        except:
             out = {"name": "N/A", "geo": {"lat": lat, "lon": lon}}
+            
         return out
 
     #all tweets
