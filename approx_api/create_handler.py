@@ -1,3 +1,5 @@
+import sys
+
 def main(thread_id):
 	#do handler stuff here
     # do whatever the script does
