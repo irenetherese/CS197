@@ -280,14 +280,14 @@ class ApproximationAPI:
             location = self.get_location_name(arr[i][4], arr[i][5])
             dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][8]['user']['name'],  "username": arr[i][2], "profile_pic": arr[i][8]['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
         cur.close()
-        return 
+        return dic
 
     def get_tweet_vis_data_limit_ph(self, collection_id, start_row):
         statement = ''' 
             SELECT tweet_id, created_at, tweet_user, tweet_text, tweet_lat, tweet_lon, tweet_user_location, radius, tweet_json
             FROM tweet_collector_tweets
             WHERE tweet_lat IS NOT NULL AND tweet_lon IS NOT NULL AND collection_id = ''' + str(collection_id) + '''
-            AND is_inPH(cast(tweet_lon as varchar), cast(tweet_lat as varchar)); 
+            AND is_inPH(cast(tweet_lon as varchar), cast(tweet_lat as varchar))
             ORDER BY created_at
             LIMIT 10 OFFSET ''' + str(start_row)
 
@@ -357,15 +357,17 @@ class ApproximationAPI:
 
     def update_model(self): 
         #Should return tweets from the past 6 hours only
-        date_start = datetime.now().strftime("'%Y-%m-%d %H:%M:%S'")
-        date_end = datetime.now() - timedelta(hours = 6).strftime("'%Y-%m-%d %H:%M:%S'")
+        date_end = datetime.now().strftime("'%Y-%m-%d %H:%M:%S'")
+        date_start = (datetime.now() - timedelta(hours = 6)).strftime("'%Y-%m-%d %H:%M:%S'")
         statement = ''' 
+	     DELETE FROM model_tweets;
              INSERT INTO model_tweets SELECT * FROM tweet_collector_tweets
-             WHERE created_at BETWEEN ''' + date_startdate + ''' AND ''' + date_end
+             WHERE created_at BETWEEN ''' + date_start + ''' AND ''' + date_end
 
+        print(statement)
         cur = self.con.cursor()
         cur.execute(statement)
-
+        print("Performed insert")
         return 0
 
 

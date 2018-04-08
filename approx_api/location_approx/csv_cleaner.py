@@ -2,7 +2,7 @@ import csv
 import pandas as pd
 import requests
 import json
-from utils import make_dir
+from location_approx.utils import make_dir
 
 def csv_reader(file_obj,filename):
 	reader = csv.DictReader(file_obj, delimiter=',')

@@ -2,7 +2,7 @@ from gensim import corpora, similarities
 from gensim.models.lsimodel import LsiModel
 import pandas as pd
 import random
-from utils import make_dir
+from location_approx.utils import make_dir
 from datetime import datetime
 
 def get_matrix_similarity(tweet, data):

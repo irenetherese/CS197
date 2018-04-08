@@ -50,7 +50,7 @@ def get_geo_tweets(collection_id):
     return jsonify(a.get_geo_tweets(collection_id))
 
 @app.route("/get_geo_tweets/ph/<int:collection_id>")
-def get_geo_tweets(collection_id):
+def get_geo_tweets_ph(collection_id):
     return jsonify(a.get_geo_tweets_ph(collection_id))
 
 @app.route("/get_non_geo_tweets/<int:collection_id>")
@@ -62,7 +62,7 @@ def get_all_geo_tweets():
     return jsonify(a.get_all_geo_tweets())
 
 @app.route("/get_geo_tweets/ph")
-def get_all_geo_tweets():
+def get_all_geo_tweets_ph():
     return jsonify(a.get_all_geo_tweets_ph())
 
 @app.route("/get_non_geo_tweets")
@@ -74,7 +74,7 @@ def get_tweet_vis_data(collection_id):
     return jsonify(a.get_tweet_vis_data(collection_id))
 
 @app.route("/get_tweet_vis_data/ph/<int:collection_id>")
-def get_tweet_vis_data(collection_id):
+def get_tweet_vis_data_ph(collection_id):
     return jsonify(a.get_tweet_vis_data_ph(collection_id))
 
 @app.route("/get_city")
@@ -101,7 +101,7 @@ def get_geo_tweets_hour(collection_id, year, month, day, hour):
   return jsonify(a.get_geo_tweets_hour(collection_id, date_start, date_end))
 
 @app.route("/get_geo_tweets/ph/<int:collection_id>/<int:year>/<int:month>/<int:day>/<int:hour>")
-def get_geo_tweets_hour(collection_id, year, month, day, hour):
+def get_geo_tweets_hour_ph(collection_id, year, month, day, hour):
   try:
     date_start = datetime(year, month, day, hour, 0) 
     date_end = datetime(year, month, day, hour + 1, 0)
@@ -125,12 +125,12 @@ def get_tweet_vis_data_limit(collection_id, start_row):
     return jsonify(a.get_tweet_vis_data_limit(collection_id, start_row))
 
 @app.route("/get_tweet_vis_data/ph/<int:collection_id>/<int:start_row>")
-def get_tweet_vis_data_limit(collection_id, start_row):
+def get_tweet_vis_data_limit_ph(collection_id, start_row):
     return jsonify(a.get_tweet_vis_data_limit_ph(collection_id, start_row))
 
-@app.route("/create_handler/<int thread_id>")
+@app.route("/create_handler/<int:thread_id>")
 def create_handler(thread_id):
-    return os.system('create_handler.py ' + str(id))
+    return os.system('create_handler.py ' + str(thread_id))
 
 @app.route('/get_location',methods=['GET'])
 def approx_location():
