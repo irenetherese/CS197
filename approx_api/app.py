@@ -1,10 +1,12 @@
+import optparse
+import sys
+import time
+
+import location_approx.batch_manager as batch_manager
+import location_approx.process_manager as process_manager
 from flask import Flask, jsonify, request
 
-import sys
-import optparse
-import time
 import approx_api
-import requests
 
 app = Flask(__name__)
 start = int(round(time.time()))
@@ -58,22 +60,22 @@ def update_location(tweet_id, lat, lng, radius):
     return a.update_location(tweet_id, lat, lng, radius)
 
 
-@app.route('/get_location', methods=['GET'])
+@app.route('/start_thread', methods=['GET'])
 def approx_location():
-    tweet = request.values.get('tweet', None).replace('\'', '').replace(' ', '').split(',')
-    print(type(tweet[0]))
+    name = request.values.get('batch_name', 'default')
+    date = request.values.get('date', None)
 
-    data = {'output_name': '1',
-            'directory': 'yolanda',
-            'model': '1_model.txt',
-            'dataset': 'dataset_yolanda.csv',
-            'dict': '1_corpus.dict'}
-    data = get_matrix_similarity(tweet, data)
-    print(data['filename'])
-    return jsonify(get_convex_hull(10, data))
+    data = batch_manager.start_batch(name, date)
+
+    result = {}
+    result['code'] = 200
+    result['message'] = 'Batch created'
+    result['data'] = data
+    return jsonify(result)
 
 
 if __name__ == '__main__':
+    process_manager.begin()
     parser = optparse.OptionParser(usage="python3 app.py -p ")
     parser.add_option('-p', '--port', action='store', dest='port', help='The port to listen on.')
     (args, _) = parser.parse_args()

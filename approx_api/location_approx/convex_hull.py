@@ -1,10 +1,11 @@
+import math
+import os
+
+import location_approx.utils as utils
 import numpy as np
 import pandas as pd
-import math
-from scipy.spatial import ConvexHull, Delaunay
 from haversine import haversine
-import os
-import utils as utils
+from scipy.spatial import ConvexHull, Delaunay
 
 
 def get_distance(id, point, cx, cy):

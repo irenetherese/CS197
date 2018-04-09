@@ -1,7 +1,6 @@
-import psycopg2
-import sys
-import csv
 import json
+
+import psycopg2
 
 
 class ApproximationAPI:

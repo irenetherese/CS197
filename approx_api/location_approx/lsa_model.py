@@ -1,9 +1,8 @@
-from gensim.models.lsimodel import LsiModel
-from gensim import corpora, similarities
 import gensim.models as models
 import pandas as pd
-from datetime import datetime
-from utils import make_dir
+from gensim import corpora
+from gensim.models.lsimodel import LsiModel
+from location_approx.utils import make_dir
 
 
 def train_model(filename, output_name):
