@@ -84,7 +84,7 @@ class ApproximationAPI:
     # for model training
     def get_geo_tweets(self, collection_id):
         statement = ''' 
-            SELECT tweet_id, tweet_text, tweet_lat, tweet_lon
+            SELECT tweet_id, tweet_text, tweet_lat, tweet_lon,
             FROM tweet_collector_tweets
             WHERE tweet_lat IS NOT NULL AND tweet_lon IS NOT NULL AND collection_id = ''' + str(collection_id) + '''
         '''
