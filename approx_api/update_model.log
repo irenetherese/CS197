@@ -974,3 +974,13 @@ Performed insert
              INSERT INTO model_tweets SELECT * FROM tweet_collector_tweets
              WHERE created_at BETWEEN '2018-04-15 21:00:01' AND '2018-04-16 03:00:01'
 Performed insert
+ 
+	     DELETE FROM model_tweets;
+             INSERT INTO model_tweets SELECT * FROM tweet_collector_tweets
+             WHERE created_at BETWEEN '2018-04-15 22:00:01' AND '2018-04-16 04:00:01'
+Performed insert
+ 
+	     DELETE FROM model_tweets;
+             INSERT INTO model_tweets SELECT * FROM tweet_collector_tweets
+             WHERE created_at BETWEEN '2018-04-15 23:00:01' AND '2018-04-16 05:00:01'
+Performed insert

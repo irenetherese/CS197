@@ -88,8 +88,6 @@ def get_place(lat, lon):
 def update_location(tweet_id, lat, lng, radius):
     return a.update_location(tweet_id, lat, lng, radius)
 
-#@app.route('/start_thread', methods=['GET'])
-
 
 @app.route("/get_collections")
 def get_collections():
@@ -137,7 +135,7 @@ def get_tweet_vis_data_limit_ph(collection_id, start_row):
 def create_handler(thread_id):
     return handler.create_handler(thread_id)
 
-@app.route('/get_location',methods=['GET'])
+@app.route('/start_thread',methods=['GET'])
 def approx_location():
     name = request.values.get('batch_name', 'default')
     date = request.values.get('date', None)
@@ -150,6 +148,16 @@ def approx_location():
     result['data'] = data
     return jsonify(result)
 
+@app.route('end_thread',methods=['GET'])
+def end_thread_manager():
+    name = request.values.get('batch_name', 'default')
+    batch_manager.stop('name')
+    result = {}
+    result['code'] = 200
+    result['message'] = 'Batch created'
+    result['data'] = data
+    return jsonify(result)
+	
 
 @app.route("/get_model_tweets/<int:model_id>")
 def get_model_tweets(model_id):
