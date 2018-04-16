@@ -4,13 +4,13 @@ import pandas as pd
 import spacy
 
 # files = ['yolanda nov 6.csv', 'yolanda nov 7.csv', 'yolanda nov 9.csv']
-
-files = ['SalomePH-geo.csv']
+# files = ["./lda/dataset_yolanda nov 6_6.csv", "./lda/dataset_yolanda nov 6_7.csv", "./lda/dataset_yolanda nov 6_8.csv", "./lda/dataset_yolanda nov 6_9.csv", "./lda/dataset_yolanda nov 6_10.csv", "./lda/dataset_yolanda nov 6_11.csv", "./lda/dataset_yolanda nov 6_12.csv", "./lda/dataset_yolanda nov 6_13.csv", "./lda/dataset_yolanda nov 6_14.csv", "./lda/dataset_yolanda nov 6_15.csv", "./lda/dataset_yolanda nov 6_16.csv", "./lda/dataset_yolanda nov 6_17.csv", "./lda/dataset_yolanda nov 6_18.csv", "./lda/dataset_yolanda nov 6_19.csv",  "./lda/dataset_yolanda nov 6_20.csv"]
+# files = ['yolanda nov 6.csv']
+# files = ['SalomePH-geo.csv']
 
 for filename in files:
     df = pd.read_csv(filename, delimiter=',')
     nlp = spacy.load('en')
-
     new_words = ["don't", "dont"]
 
     for word in new_words:
