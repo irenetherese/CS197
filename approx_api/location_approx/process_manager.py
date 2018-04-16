@@ -5,6 +5,7 @@ from os import listdir, remove
 
 import location_approx.batch_manager as batch_manager
 import pandas as pd
+import requests
 from location_approx.convex_hull import get_convex_hull
 from location_approx.matrix_similarity import get_matrix_similarity
 from location_approx.utils import make_dir
@@ -51,10 +52,14 @@ def process(file):
 
     data = get_matrix_similarity(lemmas_list, data)
     data = get_convex_hull(number_of_dimensions, data)
+    for item in data:
+        index = int(item['filename'].replace('similarities_', '').replace('.txt', ''))
 
-    # TODO: save outputs to db
+        print('Saving to tweet id %s: %s' % (df['id'][index], item['coords']))
+
+        coords = item['coords'].replace('(', '').replace(')', '').split(',')
+        requests.get('localhost:443/update/%s/%s/%s/0' % (df['id'][index], coords[0], [coords[1]]))
 
     batch_data.close()
     remove('./data/queue/%s' % file)
-    print(data)
     return
