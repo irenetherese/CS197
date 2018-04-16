@@ -1,20 +1,21 @@
-from lsa_model import train_model
-from matrix_similarity import get_matrix_similarity
-from convex_hull import get_convex_hull
+#
+# df = pd.read_csv('./data/dataset/dataset_yolanda.csv')
+# lemmas_list = []
+#
+# count = 0
+# for lemmas in df['lemmas']:
+#     if count == 30:
+#         break
+#     lemmas = str(lemmas)
+#     lemmas = lemmas.replace('[', '').replace(']', '').replace(',', '').replace('\'', '')
+#     lemmas_list.append(lemmas.split())
+#     count += 1
+#
+# data = train_model('dataset_yolanda.csv',uuid.uuid4())
+# data = get_matrix_similarity(lemmas_list,data)
+# data = get_convex_hull(10,data)
+#
+# print(data)
 
-tweet = ['alright', 'confirm', 'class', 'level', 'rizal', 'province', 'suspend', 'tom', 'supertyphoon']
-
-
-
-data = {'output_name': '1', 
-		'directory': 'yolanda', 
-		'model': '1_model.txt', 
-		'dataset': 'dataset_yolanda.csv', 
-		'dict': '1_corpus.dict'}
-
-data = train_model('dataset_yolanda.csv','1')
-data['directory'] = 'stress'
-print(data)
-data = get_matrix_similarity(tweet,data)
-print(data['filename'])
-print(get_convex_hull(10,data))
+def hello():
+    print('hello')

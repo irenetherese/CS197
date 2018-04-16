@@ -6,5 +6,4 @@ from location_approx.process_manager import start
 s('test')
 start()
 while (True):
-    print('tick')
     time.sleep(1)
