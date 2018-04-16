@@ -2,7 +2,7 @@
 from flask import Flask, jsonify, request
 from werkzeug.routing import FloatConverter as BaseFloatConverter
 
-import os
+import handler
 import sys
 import optparse
 import time
@@ -132,7 +132,7 @@ def get_tweet_vis_data_limit_ph(collection_id, start_row):
 
 @app.route("/create_handler/<int:thread_id>")
 def create_handler(thread_id):
-    return os.system('python3 ./create_handler.py ' + str(thread_id))
+    return handler.create_handler(thread_id)
 
 @app.route('/get_location',methods=['GET'])
 def approx_location():
