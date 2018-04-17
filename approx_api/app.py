@@ -70,7 +70,7 @@ def get_tweet_vis_data(collection_id):
     return jsonify(a.get_tweet_vis_data(collection_id))
 
 @app.route("/get_city")
-def get_place(lat, lon):
+def get_place2(lat, lon):
     input_fields = get_all_request_values(['lat', 'lon'])
     return jsonify(a.get_location_name(input_fields['lat'], input_fields['lon']))
 
@@ -84,7 +84,7 @@ def get_place(lat, lon):
     #return jsonify(a.get_location_name(input_fields['lat'], input_fields['lon']))
     return jsonify(a.get_location_name(lat,lon))
 
-@app.route("/update/<float:tweet_id>/<float:lat>/<float:lon>/<int:radius>")
+@app.route("/update/<float:tweet_id>/<float:lat>/<float:lng>/<int:radius>")
 def update_location(tweet_id, lat, lng, radius):
     return a.update_location(tweet_id, lat, lng, radius)
 
@@ -148,7 +148,7 @@ def approx_location():
     result['data'] = data
     return jsonify(result)
 
-@app.route('end_thread',methods=['GET'])
+@app.route('/end_thread',methods=['GET'])
 def end_thread_manager():
     name = request.values.get('batch_name', 'default')
     batch_manager.stop('name')
@@ -167,12 +167,18 @@ def get_model_tweets(model_id):
 def get_model_tweets_ph(model_id):
     return jsonify(a.get_model_tweets_ph(model_id))
 
+#@app.route("/get_collection_id",methods=['GET'])
+#def get_collection_id():
+#    name = request.values.get('batch_name', 'default')
+#    result = a.get_collection_id(name)
+#    return jsonify(result)
+
 if __name__ == '__main__':
-    process_manager.begin()
+   # process_manager.begin()
    # parser.add_option('-p', '--port', action='store', dest='port', help='The port to listen on.')
    # (args, _) = parser.parse_args()
    # if args.port == None:
    #     print("Missing required argument: -p/--port")
    #     sys.exit(1)
-   app.run(host='0.0.0.0', port=3000, debug=False)
+    app.run(host='0.0.0.0', port=3000, debug=False)
    # app.run(debug=True)

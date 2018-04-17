@@ -984,3 +984,56 @@ Performed insert
              INSERT INTO model_tweets SELECT * FROM tweet_collector_tweets
              WHERE created_at BETWEEN '2018-04-15 23:00:01' AND '2018-04-16 05:00:01'
 Performed insert
+ 
+	     DELETE FROM model_tweets;
+             INSERT INTO model_tweets SELECT * FROM tweet_collector_tweets
+             WHERE created_at BETWEEN '2018-04-17 05:00:02' AND '2018-04-17 11:00:02'
+Performed insert
+ 
+	     DELETE FROM model_tweets;
+             INSERT INTO model_tweets SELECT * FROM tweet_collector_tweets
+             WHERE created_at BETWEEN '2018-04-17 06:00:02' AND '2018-04-17 12:00:02'
+ 
+	     DELETE FROM model_tweets;
+             INSERT INTO model_tweets SELECT * FROM tweet_collector_tweets
+             WHERE created_at BETWEEN '2018-04-17 07:00:02' AND '2018-04-17 13:00:02'
+ 
+	     DELETE FROM model_tweets;
+             INSERT INTO model_tweets SELECT * FROM tweet_collector_tweets
+             WHERE created_at BETWEEN '2018-04-17 08:00:01' AND '2018-04-17 14:00:01'
+ 
+	     DELETE FROM model_tweets;
+             INSERT INTO model_tweets SELECT * FROM tweet_collector_tweets
+             WHERE created_at BETWEEN '2018-04-17 09:00:01' AND '2018-04-17 15:00:01'
+ 
+	     DELETE FROM model_tweets;
+             INSERT INTO model_tweets SELECT * FROM tweet_collector_tweets
+             WHERE created_at BETWEEN '2018-04-17 10:00:01' AND '2018-04-17 16:00:01'
+ 
+	     DELETE FROM model_tweets;
+             INSERT INTO model_tweets SELECT * FROM tweet_collector_tweets
+             WHERE created_at BETWEEN '2018-04-17 11:00:02' AND '2018-04-17 17:00:02'
+ 
+	     DELETE FROM model_tweets;
+             INSERT INTO model_tweets SELECT * FROM tweet_collector_tweets
+             WHERE created_at BETWEEN '2018-04-17 12:00:01' AND '2018-04-17 18:00:01'
+ 
+	     DELETE FROM model_tweets;
+             INSERT INTO model_tweets SELECT * FROM tweet_collector_tweets
+             WHERE created_at BETWEEN '2018-04-17 13:00:01' AND '2018-04-17 19:00:01'
+ 
+	     DELETE FROM model_tweets;
+             INSERT INTO model_tweets SELECT * FROM tweet_collector_tweets
+             WHERE created_at BETWEEN '2018-04-17 14:00:01' AND '2018-04-17 20:00:01'
+ 
+	     DELETE FROM model_tweets;
+             INSERT INTO model_tweets SELECT * FROM tweet_collector_tweets
+             WHERE created_at BETWEEN '2018-04-17 15:00:01' AND '2018-04-17 21:00:01'
+ 
+	     DELETE FROM model_tweets;
+             INSERT INTO model_tweets SELECT * FROM tweet_collector_tweets
+             WHERE created_at BETWEEN '2018-04-17 16:00:02' AND '2018-04-17 22:00:02'
+ 
+	     DELETE FROM model_tweets;
+             INSERT INTO model_tweets SELECT * FROM tweet_collector_tweets
+             WHERE created_at BETWEEN '2018-04-17 17:00:01' AND '2018-04-17 23:00:01'
