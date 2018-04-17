@@ -37,10 +37,31 @@ def manage(name):
     print(data)
     data = train_model(output_name=data['filename'], filename='dataset_yolanda.csv')
 
+    d = datetime.datetime.strftime(data['date'], '%Y-%m-%d %H:%M:%S.%f')
+    d2 = datetime.datetime.now()
+    diff = d - d2
+    if (((diff.total_seconds() / 60) / 60) >= 1.0):
+        update_model(data)
+
+    queue_tweets(data)
+
     batch_data.seek(0)
     batch_data.truncate()
     batch_data.write(json.dumps(data))
     batch_data.close()
 
+
+    return
+
+
+def update_model(data):
+    # TODO: update model
+
+    return
+
+
+def queue_tweets(data):
+    #
+    # TODO: query non_geo_tweets then save to .csv
 
     return

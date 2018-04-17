@@ -1,9 +1,8 @@
-import psycopg2
-import sys
-import csv
-import simplejson as json
-import decimal
 from datetime import datetime, timedelta
+
+import psycopg2
+import simplejson as json
+
 
 class ApproximationAPI:
     def __init__(self, host, dbname, user, pw, port):
@@ -18,7 +17,8 @@ class ApproximationAPI:
     # CONNECTIONS #
     ###############
     def connect(self):
-        self.con = psycopg2.connect("host='" + self.host + "' dbname='" + self.dbname + "' user='" + self.user + "' password='" + self.pw + "' port='" + self.port + "'")   
+        self.con = psycopg2.connect(
+            "host='" + self.host + "' dbname='" + self.dbname + "' user='" + self.user + "' password='" + self.pw + "' port='" + self.port + "'")
         return self.con
 
     def close_connect(self):
@@ -56,8 +56,9 @@ class ApproximationAPI:
             cur.execute(statement)
             fetch = cur.fetchone()
             cur.close()
-            if(fetch != None):
-                out = {"name": {"barangay":fetch[0], "city": fetch[1], "province": fetch[2]}, "geo": {"lat": str(lat), "lon": str(lon)}}
+            if (fetch != None):
+                out = {"name": {"barangay": fetch[0], "city": fetch[1], "province": fetch[2]},
+                       "geo": {"lat": str(lat), "lon": str(lon)}}
             else:
                 out = {"name": "N/A", "geo": {"lat": lat, "lon": lon}}
         except:
@@ -95,7 +96,8 @@ class ApproximationAPI:
 
         dic = {}
         for i in range(len(arr)):
-            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]),"lon": str(arr[i][3]),"created_at": str(arr[i][4])}
+            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]), "lon": str(arr[i][3]),
+                              "created_at": str(arr[i][4])}
         cur.close()
         return dic
 
@@ -112,7 +114,8 @@ class ApproximationAPI:
 
         dic = {}
         for i in range(len(arr)):
-            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]),"lon": str(arr[i][3]),"created_at": str(arr[i][4])}
+            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]), "lon": str(arr[i][3]),
+                              "created_at": str(arr[i][4])}
         cur.close()
         return dic
 
@@ -121,14 +124,16 @@ class ApproximationAPI:
             SELECT tweet_id, tweet_text, tweet_lat, tweet_lon, created_at
             FROM tweet_collector_tweets
             WHERE tweet_lat IS NOT NULL AND tweet_lon IS NOT NULL AND collection_id = ''' + str(collection_id) + '''
-            AND created_at BETWEEN ''' + date_start.strftime("'%Y-%m-%d %H:%M:%S'") + ''' AND ''' + date_end.strftime("'%Y-%m-%d %H:%M:%S'")  
+            AND created_at BETWEEN ''' + date_start.strftime("'%Y-%m-%d %H:%M:%S'") + ''' AND ''' + date_end.strftime(
+            "'%Y-%m-%d %H:%M:%S'")
         cur = self.con.cursor()
         cur.execute(statement)
         arr = cur.fetchall()
 
         dic = {}
         for i in range(len(arr)):
-            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]),"lon": str(arr[i][3]),"created_at": str(arr[i][4])}
+            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]), "lon": str(arr[i][3]),
+                              "created_at": str(arr[i][4])}
         cur.close()
         return dic
 
@@ -137,7 +142,8 @@ class ApproximationAPI:
             SELECT tweet_id, tweet_text, tweet_lat, tweet_lon, created_at
             FROM tweet_collector_tweets
             WHERE tweet_lat IS NOT NULL AND tweet_lon IS NOT NULL AND collection_id = ''' + str(collection_id) + '''
-            AND created_at BETWEEN ''' + date_start.strftime("'%Y-%m-%d %H:%M:%S'") + ''' AND ''' + date_end.strftime("'%Y-%m-%d %H:%M:%S'") + '''
+            AND created_at BETWEEN ''' + date_start.strftime("'%Y-%m-%d %H:%M:%S'") + ''' AND ''' + date_end.strftime(
+            "'%Y-%m-%d %H:%M:%S'") + '''
             AND is_inPH(cast(tweet_lon as varchar), cast(tweet_lat as varchar)); 
         '''
         cur = self.con.cursor()
@@ -146,7 +152,8 @@ class ApproximationAPI:
 
         dic = {}
         for i in range(len(arr)):
-            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]),"lon": str(arr[i][3]),"created_at": str(arr[i][4])}
+            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]), "lon": str(arr[i][3]),
+                              "created_at": str(arr[i][4])}
         cur.close()
         return dic
 
@@ -162,7 +169,8 @@ class ApproximationAPI:
 
         dic = {}
         for i in range(len(arr)):
-            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]),"lon": str(arr[i][3]), "created_at": str(arr[i][4])}
+            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]), "lon": str(arr[i][3]),
+                              "created_at": str(arr[i][4])}
         cur.close()
         return dic
 
@@ -179,17 +187,27 @@ class ApproximationAPI:
 
         dic = {}
         for i in range(len(arr)):
-            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]),"lon": str(arr[i][3]), "created_at": str(arr[i][4])}
+            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]), "lon": str(arr[i][3]),
+                              "created_at": str(arr[i][4])}
         cur.close()
         return dic
 
     # for tweets to be geolocated using model
-    def get_non_geo_tweets(self, collection_id):
-        statement = ''' 
-            SELECT tweet_id, tweet_text, created_at
-            FROM tweet_collector_tweets
-            WHERE tweet_lat ISNULL AND tweet_lon ISNULL AND collection_id = ''' + str(collection_id) + '''
-        '''
+    def get_non_geo_tweets(self, collection_id, limit, last_tweet_id):
+
+        if last_tweet_id:
+            statement = ''' 
+                SELECT tweet_id, tweet_text, created_at
+                FROM tweet_collector_tweets
+                WHERE tweet_lat ISNULL AND tweet_lon ISNULL AND collection_id = ''' + str(collection_id) + '''
+            '''
+        else:
+            statement = ''' 
+                SELECT tweet_id, tweet_text, created_at
+                FROM tweet_collector_tweets
+                WHERE tweet_lat ISNULL AND tweet_lon ISNULL AND tweet_id < ''' + str(
+                last_tweet_id) + '''AND collection_id = ''' + str(collection_id) + ''' LIMIT + ''' + str(limit) + '''
+            '''
         cur = self.con.cursor()
         cur.execute(statement)
         arr = cur.fetchall()
@@ -221,7 +239,8 @@ class ApproximationAPI:
             SELECT tweet_id, tweet_text, created_at
             FROM tweet_collector_tweets
             WHERE tweet_lat ISNULL AND tweet_lon ISNULL AND collection_id = ''' + str(collection_id) + '''
-            AND created_at BETWEEN ''' + date_start.strftime("'%Y-%m-%d %H:%M:%S'") + ''' AND ''' + date_end.strftime("'%Y-%m-%d %H:%M:%S'")    
+            AND created_at BETWEEN ''' + date_start.strftime("'%Y-%m-%d %H:%M:%S'") + ''' AND ''' + date_end.strftime(
+            "'%Y-%m-%d %H:%M:%S'")
         cur = self.con.cursor()
         cur.execute(statement)
         arr = cur.fetchall()
@@ -246,7 +265,9 @@ class ApproximationAPI:
         dic = {}
         for i in range(len(arr)):
             location = self.get_location_name(arr[i][4], arr[i][5])
-            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": json.loads(arr[i][8])['user']['name'],  "username": arr[i][2], "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
+            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": json.loads(arr[i][8])['user']['name'],
+                              "username": arr[i][2], "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'],
+                              "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
         cur.close()
         return dic
 
@@ -264,11 +285,14 @@ class ApproximationAPI:
         dic = {}
         for i in range(len(arr)):
             location = self.get_location_name(arr[i][4], arr[i][5])
-            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": json.loads(arr[i][8])['user']['name'],  "username": arr[i][2], "profile_pic": jaon.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
+            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": json.loads(arr[i][8])['user']['name'],
+                              "username": arr[i][2], "profile_pic": jaon.loads(arr[i][8])['user']['profile_image_url'],
+                              "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
         cur.close()
         return dic
 
-        #for limited
+        # for limited
+
     def get_tweet_vis_data_limit(self, collection_id, start_row):
         statement = ''' 
             SELECT tweet_id, created_at, tweet_user, tweet_text, tweet_lat, tweet_lon, tweet_user_location, radius, tweet_json
@@ -284,7 +308,9 @@ class ApproximationAPI:
         dic = {}
         for i in range(len(arr)):
             location = self.get_location_name(arr[i][4], arr[i][5])
-            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": json.loads(arr[i][8])['user']['name'], "username": arr[i][2], "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
+            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": json.loads(arr[i][8])['user']['name'],
+                              "username": arr[i][2], "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'],
+                              "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
         cur.close()
         return dic
 
@@ -304,11 +330,11 @@ class ApproximationAPI:
         dic = {}
         for i in range(len(arr)):
             location = self.get_location_name(arr[i][4], arr[i][5])
-            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][8]['user']['name'],  "username": arr[i][2], "profile_pic": arr[i][8]['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
+            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][8]['user']['name'], "username": arr[i][2],
+                              "profile_pic": arr[i][8]['user']['profile_image_url'], "text": arr[i][3],
+                              "user_location": arr[i][6], "location": location, "radius": arr[i][7]}
         cur.close()
         return dic
-        
-        
 
     def update_location(self, tweet_id, lat, lon, radius):
         statement = ''' 
@@ -350,21 +376,24 @@ class ApproximationAPI:
             SELECT tweet_id, created_at, tweet_user, tweet_text, tweet_lat, tweet_lon, tweet_user_location, radius, tweet_json
             FROM tweet_collector_tweets
             WHERE collection_id = ''' + str(collection_id) + '''
-            AND created_at BETWEEN ''' + created_at + ''' AND ''' + date_end 
+            AND created_at BETWEEN ''' + created_at + ''' AND ''' + date_end
         cur = self.con.cursor()
         cur.execute(statement)
         arr = cur.fetchall()
 
         dic = {}
         for i in range(len(arr)):
-            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][2], "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3], "user_location": arr[i][6], "location": {"lat": str(arr[i][4]), "lon": str(arr[i][5])}, "radius": arr[i][7]}
+            dic[arr[i][0]] = {"created_at": str(arr[i][1]), "user": arr[i][2],
+                              "profile_pic": json.loads(arr[i][8])['user']['profile_image_url'], "text": arr[i][3],
+                              "user_location": arr[i][6], "location": {"lat": str(arr[i][4]), "lon": str(arr[i][5])},
+                              "radius": arr[i][7]}
         cur.close()
         return dic
 
-    def update_model(self): 
-        #Should return tweets from the past 6 hours only
+    def update_model(self):
+        # Should return tweets from the past 6 hours only
         date_end = datetime.now().strftime("'%Y-%m-%d %H:%M:%S'")
-        date_start = (datetime.now() - timedelta(hours = 6)).strftime("'%Y-%m-%d %H:%M:%S'")
+        date_start = (datetime.now() - timedelta(hours=6)).strftime("'%Y-%m-%d %H:%M:%S'")
         statement = ''' 
 	     DELETE FROM model_tweets;
              INSERT INTO model_tweets SELECT * FROM tweet_collector_tweets
@@ -387,7 +416,8 @@ class ApproximationAPI:
 
         dic = {}
         for i in range(len(arr)):
-            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]),"lon": str(arr[i][3]),"created_at": str(arr[i][4])}
+            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]), "lon": str(arr[i][3]),
+                              "created_at": str(arr[i][4])}
         cur.close()
         return dic
 
@@ -404,7 +434,8 @@ class ApproximationAPI:
 
         dic = {}
         for i in range(len(arr)):
-            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]),"lon": str(arr[i][3]),"created_at": str(arr[i][4])}
+            dic[arr[i][0]] = {"text": str(arr[i][1]), "lat": str(arr[i][2]), "lon": str(arr[i][3]),
+                              "created_at": str(arr[i][4])}
         cur.close()
         return dic
 
@@ -422,7 +453,7 @@ class ApproximationAPI:
             print("Imported gis data to provinces table")
             cur.execute(open("migrations/phl_adm2s.sql", "r").read())
             print("Imported gis data to city_municipalities table")
-            cur.execute(open("migrations/phl_adm3s.sql","r").read())
+            cur.execute(open("migrations/phl_adm3s.sql", "r").read())
             print("Imported gis data to tweet_collector_barangays table")
             self.con.commit()
             cur.close()
