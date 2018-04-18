@@ -57,9 +57,10 @@ def process(file):
 
         print('Saving to tweet id %s: %s' % (df['id'][index], item['coords']))
 
-        coords = item['coords'].replace('(', '').replace(')', '').split(',')
+        coords = str(item['coords']).replace('(', '').replace(')', '').split(',')
         requests.get('localhost:443/update/%s/%s/%s/0' % (df['id'][index], coords[0], [coords[1]]))
 
     batch_data.close()
     remove('./data/queue/%s' % file)
     return
+

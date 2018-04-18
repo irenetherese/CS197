@@ -1,16 +1,13 @@
-from flask import Flask, jsonify, request
-from werkzeug.routing import FloatConverter as BaseFloatConverter
-import os
-import handler
-import sys
-import optparse
-import sys
 import time
-import approx_api
-import requests
 from datetime import datetime
+
+import handler
 import location_approx.batch_manager as batch_manager
 import location_approx.process_manager as process_manager
+from flask import Flask, jsonify, request
+from werkzeug.routing import FloatConverter as BaseFloatConverter
+
+import approx_api
 
 app = Flask(__name__)
 start = int(round(time.time()))
@@ -40,7 +37,6 @@ def get_all_request_values(request_field_list):
 def hello_world():
     return "Hello World Flask Test!"
 
-
 @app.route("/get_geo_tweets/<int:collection_id>")
 def get_geo_tweets(collection_id):
     return jsonify(a.get_geo_tweets(collection_id))
@@ -49,9 +45,12 @@ def get_geo_tweets(collection_id):
 def get_geo_tweets_ph(collection_id):
     return jsonify(a.get_geo_tweets_ph(collection_id))
 
-@app.route("/get_non_geo_tweets/<int:collection_id>")
+
+@app.route("/get_non_geo_tweets/<int:collection_id>", methods=['GET'])
 def get_non_geo_tweets(collection_id):
-    return jsonify(a.get_non_geo_tweets(collection_id))
+    limit = request.values.get('limit', 100)
+    last_tweet_id = request.values.get('tweet_id', 0)
+    return jsonify(a.get_non_geo_tweets(collection_id, limit, last_tweet_id))
 
 @app.route("/get_geo_tweets")
 def get_all_geo_tweets():
@@ -140,22 +139,21 @@ def approx_location():
     name = request.values.get('batch_name', 'default')
     date = request.values.get('date', None)
 
-    data = batch_manager.start_batch(name, date)
+    #data = batch_manager.start_batch(name, date)
 
     result = {}
     result['code'] = 200
     result['message'] = 'Batch created'
-    result['data'] = data
+    #result['data'] = data
     return jsonify(result)
 
 @app.route('/end_thread',methods=['GET'])
 def end_thread_manager():
     name = request.values.get('batch_name', 'default')
-    batch_manager.stop('name')
+    #batch_manager.stop('name')
     result = {}
     result['code'] = 200
-    result['message'] = 'Batch created'
-    result['data'] = data
+    result['message'] = 'Batch stopped'
     return jsonify(result)
 	
 
@@ -167,11 +165,11 @@ def get_model_tweets(model_id):
 def get_model_tweets_ph(model_id):
     return jsonify(a.get_model_tweets_ph(model_id))
 
-#@app.route("/get_collection_id",methods=['GET'])
-#def get_collection_id():
-#    name = request.values.get('batch_name', 'default')
-#    result = a.get_collection_id(name)
-#    return jsonify(result)
+@app.route("/get_collection_id",methods=['GET'])
+def get_collection_id():
+    name = request.values.get('batch_name', 'default')
+    result = a.get_collection_id(name)
+    return jsonify(result)
 
 if __name__ == '__main__':
    # process_manager.begin()
