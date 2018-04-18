@@ -50,7 +50,6 @@ def manage(name):
     batch_data.write(json.dumps(data))
     batch_data.close()
 
-
     return
 
 
