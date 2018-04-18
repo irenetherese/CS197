@@ -33,12 +33,15 @@ def start_thread():
 
 
 def process(file):
-    filename = file.replace('.csv', '')
+    filename = file.replace('.csv', '').split(' ')[0]
 
+    print('Found file: %s.csv' % filename)
     batch_data = open('./data/batch_data/batch_%s' % filename, 'r+')
     data = json.load(batch_data)
     df = pd.read_csv('./data/queue/%s' % file)
-
+    print(data['model'])
+    data['model'] = data['model'].replace('-count%s' % data['model_count'], file.replace('.csv', '').split(' ')[1])
+    print(data['model'])
     lemmas_list = []
 
     count = 0
@@ -58,10 +61,11 @@ def process(file):
 
         print('Saving to tweet id %s: %s' % (df['id'][index], item['coords']))
 
-        coords = str(item['coords']).replace('(', '').replace(')', '').split(',')
-        requests.get('localhost:443/update/%s/%s/%s/0' % (df['id'][index], coords[0], [coords[1]]))
+        coords = str(item['coords']).replace('(', '').replace(')', '').replace(' ', '').split(',')
+        print(
+            requests.get('http://35.202.52.52:443/update/%s/%s/%s/0' % (
+            df['id'][index].replace('\'', ''), coords[0], coords[1])).text)
 
     batch_data.close()
     remove('./data/queue/%s' % file)
     return
-

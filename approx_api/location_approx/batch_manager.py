@@ -25,8 +25,8 @@ def start(name, date=None):
             data['date'] = str(datetime.datetime.now())
         data['last_tweet_id'] = ''
         data['model'] = ''
+        data['model_count'] = 1
         file.write(json.dumps(data))
-    manage(name, True)
     return data
 
 
@@ -38,6 +38,7 @@ def stop(name):
 def manage(name, isFirst=False):
     batch_data = open('./data/batch_data/batch_%s' % name, 'r+')
     data = json.load(batch_data)
+    isFirst = (data['model'] == '')
     try:
         d = datetime.datetime.strptime(data['date'], '%Y-%m-%d %H:%M:%S.%f')
     except ValueError:
@@ -77,46 +78,58 @@ def update_model(data):
     tweets = json.loads(requests.get('http://35.202.52.52:443/get_geo_tweets/ph/%s/%i/%i/%i/%i' % (
         data['collection_id'], d.year, d.month, d.day, d.hour)).text)
 
-    writer.writerow({
-        'id': 'id',
-        'lat': 'lat',
-        'lng': 'lng',
-        'text': 'text'
-    })
-
-    last_tweet = ''
-    for item in tweets:
-        last_tweet = item
+    if len(tweets) > 50:
+        print(len(tweets))
         writer.writerow({
-            'id': item,
-            'lat': tweets[item]['lat'],
-            'lng': tweets[item]['lon'],
-            'text': tweets[item]['text']
+            'id': 'id',
+            'lat': 'lat',
+            'lng': 'lng',
+            'text': 'text'
         })
-    data['last_tweet_id'] = last_tweet
-    print('.csv file created')
-    file.close()
 
-    print('Lemmatizing tweets')
-    process_tweets('./data/dataset/dataset_%s.csv' % data['filename'])
-    print('Tweets lemmatized')
+        last_tweet = ''
+        for item in tweets:
+            last_tweet = item
+            writer.writerow({
+                'id': item,
+                'lat': tweets[item]['lat'],
+                'lng': tweets[item]['lon'],
+                'text': tweets[item]['text']
+            })
+        data['last_tweet_id'] = last_tweet
+        print('.csv file created')
+        file.close()
 
-    print('Training model')
-    data = train_model(output_name=data['filename'], filename='dataset_%s.csv' % data['filename'], data=data)
-    print('Model created at %s' % data['model'])
+        print('Lemmatizing tweets')
+        process_tweets('./data/dataset/dataset_%s.csv' % data['filename'])
+        print('Tweets lemmatized')
+
+        print('Training model')
+        data = train_model(output_name=data['filename'] + ' -count' + str(data['model_count']),
+                           filename='dataset_%s.csv' % data['filename'], data=data)
+        data['model_count'] = int(data['model_count']) + 1
+        print('Model created at %s' % data['model'])
+    else:
+        print('Not enough tweets for model creation')
     return data
 
 
 def queue_tweets(data):
+    try:
+        d = datetime.datetime.strptime(data['date'], '%Y-%m-%d %H:%M:%S.%f')
+    except ValueError:
+        d = datetime.datetime.strptime(data['date'], '%Y-%m-%d %H:%M:%S')
+
     if data['last_tweet_id'] != '':
         tweets = json.loads(requests.get(
-            'http://35.202.52.52:443/get_non_geo_tweets/%s?tweet_id=%s' % (
-                data['collection_id'], data['last_tweet_id'])).text)
+            'http://35.202.52.52:443/get_non_geo_tweets/%s/%i/%i/%i/%i?tweet_id=%s' % (
+                data['collection_id'], d.year, d.month, d.day, d.hour, data['last_tweet_id'])).text)
     else:
         tweets = json.loads(requests.get(
-            'http://35.202.52.52:443/get_non_geo_tweets/%s' % (data['collection_id'])).text)
+            'http://35.202.52.52:443/get_non_geo_tweets/%s/%i/%i/%i/%i' % (
+                data['collection_id'], d.year, d.month, d.day, d.hour)).text)
     if len(tweets) > 1:
-        file = open('./data/queue/%s.csv' % data['name'], 'w+')
+        file = open('./data/queue/%s %i.csv' % (data['name'], data['model_count']), 'w+')
         writer = csv.DictWriter(file, fieldnames={
             'id': 'id',
             'text': 'text'
@@ -134,4 +147,7 @@ def queue_tweets(data):
             })
     else:
         print('No tweets found for batch %s' % data['name'])
+
+    process_tweets('./data/queue/%s %i.csv' % (data['name'], data['model_count']))
+
     return data
