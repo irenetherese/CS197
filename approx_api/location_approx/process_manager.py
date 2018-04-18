@@ -23,6 +23,7 @@ def start_thread():
         files = listdir('./data/queue')
         if len(files) == 0:
             files = listdir('./data/batch_data')
+            print(files)
             if len(files) != 0:
                 for file in files:
                     batch_manager.manage(file.replace('batch_', ''))

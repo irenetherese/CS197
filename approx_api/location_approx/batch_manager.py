@@ -17,7 +17,7 @@ def start(name, date=None):
         data['name'] = name
         # data['collection_id'] = json.loads(requests.get('localhost:443/get_collection_id?batch_name=%s' % name).text)[
         #     'id']
-        data['collection_id'] = 4
+        data['collection_id'] = 1
         data['filename'] = str(uuid.uuid4())
         if date:
             data['date'] = str(date)
@@ -31,36 +31,44 @@ def start(name, date=None):
 
 
 def stop(name):
-    if name in listdir('./data/batch_data'):
+    filename = 'batch_%s' % name
+    if filename in listdir('./data/batch_data'):
         remove('./data/batch_data/batch_%s' % name)
 
 
+
 def manage(name, isFirst=False):
-    batch_data = open('./data/batch_data/batch_%s' % name, 'r+')
-    data = json.load(batch_data)
-    isFirst = (data['model'] == '')
     try:
-        d = datetime.datetime.strptime(data['date'], '%Y-%m-%d %H:%M:%S.%f')
-    except ValueError:
-        d = datetime.datetime.strptime(data['date'], '%Y-%m-%d %H:%M:%S')
-    d2 = datetime.datetime.now()
-    diff = d - d2
+        batch_data = open('./data/batch_data/batch_%s' % name, 'r+')
+        data = json.load(batch_data)
 
-    if (((diff.total_seconds() / 60) / 60) >= 1.0 or isFirst):
-        data = update_model(data)
+        isFirst = (data['model'] == '')
+        try:
+            d = datetime.datetime.strptime(data['date'], '%Y-%m-%d %H:%M:%S.%f')
+        except ValueError:
+            d = datetime.datetime.strptime(data['date'], '%Y-%m-%d %H:%M:%S')
+        d2 = datetime.datetime.now()
+        diff = d - d2
 
-    data = queue_tweets(data)
+        if (((diff.total_seconds() / 60) / 60) >= 1.0 or isFirst):
+            data = update_model(data)
 
-    batch_data.seek(0)
-    batch_data.truncate()
-    batch_data.write(json.dumps(data))
-    batch_data.close()
+        data = queue_tweets(data)
 
+        batch_data.seek(0)
+        batch_data.truncate()
+        batch_data.write(json.dumps(data))
+        batch_data.close()
+    except:
+        batch_data.close()
+        stop(data['name'])
+        return
     return
 
 
 def update_model(data):
     print('Updating model for batch %s' % data['name'])
+    make_dir('./data/dataset/')
     file = open('./data/dataset/dataset_%s.csv' % data['filename'], 'w+')
     try:
         d = datetime.datetime.strptime(data['date'], '%Y-%m-%d %H:%M:%S.%f')
@@ -79,7 +87,6 @@ def update_model(data):
         data['collection_id'], d.year, d.month, d.day, d.hour)).text)
 
     if len(tweets) > 50:
-        print(len(tweets))
         writer.writerow({
             'id': 'id',
             'lat': 'lat',
@@ -145,9 +152,10 @@ def queue_tweets(data):
                 'id': item,
                 'text': tweets[item]['text']
             })
+
+        process_tweets('./data/queue/%s %i.csv' % (data['name'], data['model_count']))
     else:
         print('No tweets found for batch %s' % data['name'])
 
-    process_tweets('./data/queue/%s %i.csv' % (data['name'], data['model_count']))
 
     return data
