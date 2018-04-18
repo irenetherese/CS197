@@ -15,7 +15,7 @@ def get_matrix_similarity(tweet, data):
           dataset:
             filename of dataset csv file
           dict:
-              filename of dictionary file
+            filename of dictionary file
           model:
             filename of lsa model
           output_name:

@@ -4,8 +4,9 @@ from gensim import corpora
 from gensim.models.lsimodel import LsiModel
 from location_approx.utils import make_dir
 
-def train_model(filename, output_name):
-    output = {}
+
+def train_model(filename, output_name, data={}):
+    output = data
 
     output['dataset'] = filename
     output['output_name'] = output_name

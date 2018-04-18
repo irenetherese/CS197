@@ -3,7 +3,6 @@ from datetime import datetime
 
 import handler
 import location_approx.batch_manager as batch_manager
-import location_approx.process_manager as process_manager
 from flask import Flask, jsonify, request
 from werkzeug.routing import FloatConverter as BaseFloatConverter
 
@@ -78,10 +77,10 @@ def get_tweet_vis_data(collection_id):
     return jsonify(a.get_tweet_vis_data(collection_id))
 
 
-@app.route("/get_city")
-def get_place2(lat, lon):
-    input_fields = get_all_request_values(['lat', 'lon'])
-    return jsonify(a.get_location_name(input_fields['lat'], input_fields['lon']))
+# @app.route("/get_city")
+# def get_place2(lat, lon):
+#     input_fields = get_all_request_values(['lat', 'lon'])
+#     return jsonify(a.get_location_name(input_fields['lat'], input_fields['lon']))
 
 
 @app.route("/get_tweet_vis_data/ph/<int:collection_id>")

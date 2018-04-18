@@ -10,7 +10,7 @@ from location_approx.convex_hull import get_convex_hull
 from location_approx.matrix_similarity import get_matrix_similarity
 from location_approx.utils import make_dir
 
-number_of_dimensions = 10
+NUMBER_OF_DIMENSIONS = 10
 
 
 def start():
@@ -23,11 +23,11 @@ def start_thread():
         files = listdir('./data/queue')
         if len(files) == 0:
             files = listdir('./data/batch_data')
-            if len(files) == 0:
+            if len(files) != 0:
                 for file in files:
-                    batch_manager.manage(file)
+                    batch_manager.manage(file.replace('batch_', ''))
             else:
-                time.sleep(1)
+                time.sleep(5)
         else:
             process(files[0])
 
@@ -51,7 +51,8 @@ def process(file):
         count += 1
 
     data = get_matrix_similarity(lemmas_list, data)
-    data = get_convex_hull(number_of_dimensions, data)
+    data = get_convex_hull(NUMBER_OF_DIMENSIONS, data)
+
     for item in data:
         index = int(item['filename'].replace('similarities_', '').replace('.txt', ''))
 
