@@ -17,7 +17,7 @@ def start(name, date=None):
         data['name'] = name
         # data['collection_id'] = json.loads(requests.get('localhost:443/get_collection_id?batch_name=%s' % name).text)[
         #     'id']
-        data['collection_id'] = 1
+        data['collection_id'] = 4
         data['filename'] = str(uuid.uuid4())
         if date:
             data['date'] = str(date)
